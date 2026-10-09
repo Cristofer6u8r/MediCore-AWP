@@ -1,0 +1,9 @@
+{
+  "name": "medicore-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PWA de MediCore para la gestión y demostración de citas médicas.",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

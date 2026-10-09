@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0B3B60">
+    <meta name="description" content="MediCore facilita la organización de citas médicas para consultorios pequeños.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MediCore">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="./style.css">
+    <title>MediCore | Agenda médica inteligente</title>
+</head>
+<body>
+    <header class="site-header" id="inicio">
+        <div class="container header-inner">
+            <a class="brand" href="#inicio" aria-label="MediCore, inicio">
+                <span class="brand-logo" aria-hidden="true">MC</span>
+                <span class="brand-text">
+                    <strong>MediCore</strong>
+                    <small>Gestión clínica inteligente</small>
+                </span>
+            </a>
+
+            <button class="menu-toggle" id="menu-toggle" type="button"
+                    aria-label="Abrir menú" aria-expanded="false"
+                    aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
+                <a href="#inicio">Inicio</a>
+                <a href="#agenda">Agenda de citas</a>
+                <a href="#videoconsulta">Videoconsulta</a>
+                <a href="#clima">Recomendaciones</a>
+                <a href="#catalogo">Enfermedades</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <span class="eyebrow">Tecnología al servicio de la salud</span>
+                    <h1>La atención médica empieza con una <span>buena agenda.</span></h1>
+                    <p>
+                        MediCore integra la organización de citas con herramientas
+                        digitales para consultorios pequeños. Una experiencia clara
+                        ayuda a pacientes y personal clínico a aprovechar mejor su tiempo.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="button primary" href="#agenda">Explorar agenda</a>
+                        <button class="button secondary install-button" id="install-button" type="button" hidden>
+                            Instalar MediCore
+                        </button>
+                    </div>
+                    <p class="install-hint" id="install-hint" aria-live="polite">
+                        Agenda, seguimiento y atención digital en una sola experiencia.
+                    </p>
+                    <div class="hero-points">
+                        <span><b>01</b> Selección de horario</span>
+                        <span><b>02</b> Modalidad presencial o remota</span>
+                        <span><b>03</b> Confirmación clara</span>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="visual-heading">
+                        <span class="visual-dot"></span>
+                        <span>Agenda digital</span>
+                        <span class="visual-tag">Demostración</span>
+                    </div>
+                    <div class="appointment-card">
+                        <div class="appointment-top">
+                            <div>
+                                <span class="small-label">PRÓXIMA CONSULTA</span>
+                                <h2>Medicina general</h2>
+                            </div>
+                            <div class="doctor-avatar" aria-hidden="true">MC</div>
+                        </div>
+                        <div class="appointment-line">
+                            <span class="line-icon" aria-hidden="true">▦</span>
+                            <div><small>Fecha</small><strong>Martes, 6 de octubre</strong></div>
+                        </div>
+                        <div class="appointment-line">
+                            <span class="line-icon" aria-hidden="true">◷</span>
+                            <div><small>Horario</small><strong>12:00 h</strong></div>
+                        </div>
+                        <div class="appointment-line">
+                            <span class="line-icon" aria-hidden="true">◎</span>
+                            <div><small>Modalidad</small><strong>Presencial</strong></div>
+                        </div>
+                        <div class="confirmed-label"><span>✓</span> Resumen de cita visible</div>
+                    </div>
+                    <div class="visual-caption">Información organizada, de un vistazo.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="agenda">
+            <div class="container">
+                <div class="section-heading">
+                    <span class="eyebrow">Agenda de citas</span>
+                    <h2>Organizar una consulta puede ser sencillo.</h2>
+                    <p>
+                        La agenda digital permite revisar especialidad, fecha, horario y
+                        modalidad antes de enviar una solicitud de cita.
+                    </p>
+                </div>
+
+                <div class="steps">
+                    <article class="step-card">
+                        <span class="step-number">01</span>
+                        <h3>Seleccionar</h3>
+                        <p>Elegir la especialidad que corresponde a la consulta.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-number">02</span>
+                        <h3>Consultar</h3>
+                        <p>Revisar las opciones de fecha, horario y modalidad.</p>
+                    </article>
+                    <article class="step-card">
+                        <span class="step-number">03</span>
+                        <h3>Confirmar</h3>
+                        <p>Ver un resumen de los datos seleccionados antes de terminar.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section booking-section">
+            <div class="container booking-grid">
+                <div class="booking-copy">
+                    <span class="eyebrow">Agenda interactiva</span>
+                    <h2>Encuentra una opción de consulta.</h2>
+                    <p>
+                        Esta demostración muestra cómo podría sentirse el proceso de
+                        agendamiento dentro de MediCore. No se generan citas reales ni se
+                        almacenan datos personales.
+                    </p>
+                    <div class="innovation-box">
+                        <span class="innovation-symbol" aria-hidden="true">✦</span>
+                        <div>
+                            <strong>Propuesta de valor</strong>
+                            <p>
+                                Presentar la disponibilidad y la modalidad en un mismo flujo
+                                ayuda a reducir confusiones durante la reservación.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="booking-form" id="booking-form">
+                    <h3>Solicitud de cita</h3>
+                    <label for="specialty">Especialidad</label>
+                    <select id="specialty" name="specialty" required>
+                        <option value="">Selecciona una opción</option>
+                        <option>Medicina general</option>
+                        <option>Pediatría</option>
+                        <option>Dermatología</option>
+                        <option>Nutrición</option>
+                    </select>
+
+                    <label for="date">Fecha</label>
+                    <input id="date" name="date" type="date" required>
+
+                    <label for="time">Horario disponible</label>
+                    <select id="time" name="time" required>
+                        <option value="">Selecciona un horario</option>
+                        <option>09:00</option>
+                        <option>10:30</option>
+                        <option>12:00</option>
+                        <option>16:00</option>
+                    </select>
+
+                    <label for="mode">Modalidad</label>
+                    <select id="mode" name="mode" required>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Videoconsulta">Videoconsulta</option>
+                    </select>
+
+                    <button class="button primary full-width" type="submit">Ver resumen</button>
+                    <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
+                </form>
+            </div>
+        </section>
+
+        <section class="section media-section" id="videoconsulta">
+            <div class="container media-grid">
+                <div>
+                    <span class="eyebrow">Atención conectada</span>
+                    <h2>De la agenda a la videoconsulta.</h2>
+                    <p>
+                        Para los casos apropiados, una cita puede realizarse a distancia.
+                        La videoconsulta amplía las opciones de atención y complementa la
+                        agenda digital del consultorio.
+                    </p>
+                    <ul class="feature-list">
+                        <li><strong>Agenda organizada</strong><span>Horarios visibles y fáciles de revisar.</span></li>
+                        <li><strong>Modalidad flexible</strong><span>Atención presencial o remota.</span></li>
+                        <li><strong>Seguimiento centralizado</strong><span>Funciones clínicas relacionadas dentro de MediCore.</span></li>
+                    </ul>
+                </div>
+
+                <div class="media-card">
+                    <div class="media-frame">
+                        <video controls preload="metadata"
+                               poster="https://images.pexels.com/photos/8376228/pexels-photo-8376228.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                               aria-label="Video de una consulta médica en línea">
+                            <source src="https://videos.pexels.com/video-files/8375492/8375492-uhd_2160_4096_25fps.mp4" type="video/mp4">
+                            Tu navegador no puede reproducir este video.
+                        </video>
+                    </div>
+                    <div class="media-credit">
+                        <strong>Ejemplo de videoconsulta</strong>
+                        <p>Video de referencia de Pexels. El reproductor requiere conexión a internet.</p>
+                        <a href="https://www.pexels.com/video/a-doctor-having-online-consultation-on-her-laptop-8375467/"
+                           target="_blank" rel="noopener noreferrer">Ver fuente del video</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section context-section" id="clima">
+            <div class="container context-grid">
+                <div>
+                    <span class="eyebrow">Información de apoyo</span>
+                    <h2>Recomendaciones que consideran el contexto.</h2>
+                    <p>
+                        MediCore contempla un módulo de recomendaciones relacionadas con
+                        el clima, pensado para ofrecer información de apoyo pertinente
+                        para el usuario.
+                    </p>
+                </div>
+                <div class="context-card">
+                    <span class="context-icon" aria-hidden="true">☼</span>
+                    <div>
+                        <strong>Clima y prevención</strong>
+                        <p>
+                            La información contextual puede complementar la experiencia
+                            digital sin sustituir la orientación de un profesional de salud.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section catalog-section" id="catalogo">
+            <div class="container catalog-grid">
+                <div>
+                    <span class="eyebrow">Catálogo de enfermedades</span>
+                    <h2>Información organizada en un mismo sistema.</h2>
+                </div>
+                <p>
+                    El catálogo reúne información general sobre enfermedades y se relaciona
+                    con los demás módulos de MediCore: expediente clínico, agenda,
+                    videoconsulta y herramientas de apoyo. Su contenido es informativo y no
+                    reemplaza un diagnóstico profesional.
+                </p>
+            </div>
+        </section>
+
+        <section class="install-section">
+            <div class="container install-panel">
+                <div>
+                    <span class="eyebrow">MediCore PWA</span>
+                    <h2>Una experiencia web que puede instalarse.</h2>
+                    <p>
+                        Con un navegador compatible, MediCore puede agregarse a la pantalla
+                        de inicio y abrirse en una ventana independiente. La interfaz básica
+                        también puede cargarse sin conexión después de la primera visita.
+                    </p>
+                </div>
+                <button class="button primary install-button" id="install-button-bottom" type="button" hidden>
+                    Instalar aplicación
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="brand-logo" aria-hidden="true">MC</span>
+                <div><strong>MediCore</strong><span>Gestión clínica inteligente</span></div>
+            </div>
+            <p>Proyecto académico · Aplicaciones Web Progresivas · UTP</p>
+        </div>
+    </footer>
+
+    <div class="network-status" id="network-status" role="status" aria-live="polite"></div>
+    <script src="./script.js"></script>
+</body>
+</html>
