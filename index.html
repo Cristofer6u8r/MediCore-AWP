@@ -267,18 +267,26 @@
 
         <section class="install-section">
             <div class="container install-panel">
-                <div>
+                <div class="install-copy">
                     <span class="eyebrow">MediCore PWA</span>
                     <h2>Una experiencia web que puede instalarse.</h2>
                     <p>
-                        Con un navegador compatible, MediCore puede agregarse a la pantalla
-                        de inicio y abrirse en una ventana independiente. La interfaz básica
-                        también puede cargarse sin conexión después de la primera visita.
+                        Instala MediCore en tu dispositivo y activa avisos para recibir
+                        notificaciones incluso cuando no tengas abierta la página.
+                        La interfaz básica se conserva después de la primera visita.
                     </p>
                 </div>
-                <button class="button primary install-button" id="install-button-bottom" type="button" hidden>
-                    Instalar aplicación
-                </button>
+                <div class="install-actions">
+                    <button class="button primary install-button" id="install-button-bottom" type="button" hidden>
+                        Instalar aplicación
+                    </button>
+                    <button class="button secondary" id="notification-button" type="button">
+                        Activar notificaciones
+                    </button>
+                    <p class="notification-help" id="notification-help" aria-live="polite">
+                        Activa las notificaciones desde un navegador compatible.
+                    </p>
+                </div>
             </div>
         </section>
     </main>

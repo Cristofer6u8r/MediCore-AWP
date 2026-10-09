@@ -106,3 +106,119 @@ function updateConnectionStatus() {
 window.addEventListener("online", updateConnectionStatus);
 window.addEventListener("offline", updateConnectionStatus);
 updateConnectionStatus();
+
+// Notificaciones push: la clave pública llega desde el servidor; la privada nunca sale de Railway.
+const notificationButton = document.getElementById("notification-button");
+const notificationHelp = document.getElementById("notification-help");
+let pushConfiguration = null;
+
+function base64UrlToBytes(value) {
+    const padding = "=".repeat((4 - value.length % 4) % 4);
+    const base64 = (value + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const raw = atob(base64);
+    const bytes = new Uint8Array(raw.length);
+    for (let index = 0; index < raw.length; index += 1) {
+        bytes[index] = raw.charCodeAt(index);
+    }
+    return bytes;
+}
+
+function setNotificationMessage(message) {
+    if (notificationHelp) notificationHelp.textContent = message;
+}
+
+async function loadPushConfiguration() {
+    if (!notificationButton) return;
+    if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+        notificationButton.disabled = true;
+        setNotificationMessage("Este navegador no admite notificaciones push. Prueba con una versión reciente de Chrome, Edge o Firefox.");
+        return;
+    }
+
+    try {
+        const response = await fetch("./api/config", { cache: "no-store" });
+        if (!response.ok) throw new Error("No se pudo leer la configuración de notificaciones.");
+        const config = await response.json();
+
+        if (!config.pushEnabled || !config.vapidPublicKey) {
+            notificationButton.disabled = true;
+            setNotificationMessage("El servicio de notificaciones todavía no está configurado en el servidor.");
+            return;
+        }
+
+        pushConfiguration = config;
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        notificationButton.textContent = subscription
+            ? "Enviar notificación de prueba"
+            : "Activar notificaciones";
+        notificationButton.disabled = false;
+
+        if (Notification.permission === "denied") {
+            setNotificationMessage("Las notificaciones están bloqueadas en el navegador. Permítelas en la configuración del sitio para activarlas.");
+        } else if (subscription) {
+            setNotificationMessage("Este dispositivo ya está suscrito a las notificaciones de MediCore.");
+        } else {
+            setNotificationMessage("Actívalas para recibir avisos de MediCore en este dispositivo.");
+        }
+    } catch (error) {
+        notificationButton.disabled = true;
+        setNotificationMessage("No se pudo comprobar el servicio push. Conéctate a internet y vuelve a intentarlo.");
+        console.error("Error al cargar la configuración push:", error);
+    }
+}
+
+if (notificationButton) {
+    notificationButton.addEventListener("click", async () => {
+        notificationButton.disabled = true;
+        try {
+            if (!pushConfiguration) await loadPushConfiguration();
+            if (!pushConfiguration) return;
+
+            const registration = await navigator.serviceWorker.ready;
+            let subscription = await registration.pushManager.getSubscription();
+
+            if (!subscription) {
+                const permission = await Notification.requestPermission();
+                if (permission !== "granted") {
+                    setNotificationMessage("No se concedió permiso para mostrar notificaciones.");
+                    return;
+                }
+
+                subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: base64UrlToBytes(pushConfiguration.vapidPublicKey)
+                });
+
+                const saveResponse = await fetch("./api/push/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(subscription)
+                });
+                if (!saveResponse.ok) {
+                    throw new Error("No se pudo guardar la suscripción de este dispositivo.");
+                }
+            }
+
+            const testResponse = await fetch("./api/push/test", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ endpoint: subscription.endpoint })
+            });
+            const result = await testResponse.json();
+            if (!testResponse.ok) {
+                throw new Error(result.error || "No se pudo enviar la notificación de prueba.");
+            }
+
+            notificationButton.textContent = "Enviar notificación de prueba";
+            setNotificationMessage("Suscripción activa. Se envió una notificación push de prueba a este dispositivo.");
+        } catch (error) {
+            setNotificationMessage(error.message || "No se pudo activar la notificación. Comprueba tu conexión y vuelve a intentarlo.");
+            console.error("Error al activar las notificaciones push:", error);
+        } finally {
+            notificationButton.disabled = false;
+        }
+    });
+}
+
+loadPushConfiguration();

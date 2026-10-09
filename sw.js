@@ -1,4 +1,4 @@
-const CACHE_NAME = "medicore-pwa-v1";
+const CACHE_NAME = "medicore-pwa-v2";
 const APP_SHELL = [
     "./",
     "./index.html",
@@ -29,27 +29,81 @@ self.addEventListener("activate", (event) => {
     );
 });
 
+// Procesa notificaciones push enviadas por el servidor.
+self.addEventListener("push", (event) => {
+    let payload = {};
+    try {
+        payload = event.data ? event.data.json() : {};
+    } catch {
+        payload = { body: event.data ? event.data.text() : "" };
+    }
+
+    const title = typeof payload.title === "string" && payload.title.length
+        ? payload.title.slice(0, 120)
+        : "MediCore";
+    const body = typeof payload.body === "string"
+        ? payload.body.slice(0, 500)
+        : "Tienes una nueva notificación.";
+    const target = typeof payload.url === "string" && payload.url.startsWith("/")
+        && !payload.url.startsWith("//")
+        ? payload.url
+        : "/";
+
+    event.waitUntil(
+        self.registration.showNotification(title, {
+            body,
+            icon: "./assets/icon-192.png",
+            badge: "./assets/icon-192.png",
+            tag: "medicore-notification",
+            data: { url: target }
+        })
+    );
+});
+
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+    const requested = event.notification.data && event.notification.data.url
+        ? event.notification.data.url
+        : "/";
+    const targetUrl = new URL(
+        requested.startsWith("/") && !requested.startsWith("//") ? requested : "/",
+        self.location.origin
+    );
+
+    event.waitUntil(
+        self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+            const appClient = clients.find((client) => new URL(client.url).origin === self.location.origin);
+            if (appClient) {
+                return appClient.navigate(targetUrl.href).then((client) => (client || appClient).focus());
+            }
+            return self.clients.openWindow(targetUrl.href);
+        })
+    );
+});
+
 self.addEventListener("fetch", (event) => {
     const request = event.request;
     if (request.method !== "GET") return;
 
     const requestUrl = new URL(request.url);
-
-    // Los recursos externos (fotografía y video de referencia) se consultan en línea.
     if (requestUrl.origin !== self.location.origin) return;
+
+    // Nunca guardar en caché respuestas de API, claves públicas o resultados que cambian.
+    if (requestUrl.pathname.startsWith("/api/")) return;
 
     if (request.mode === "navigate") {
         event.respondWith(
-            fetch(request)
-                .then((response) => {
-                    const copy = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-                    return response;
-                })
-                .catch(async () => {
-                    const cachedPage = await caches.match(request);
-                    return cachedPage || caches.match("./index.html") || caches.match("./offline.html");
-                })
+            fetch(request).then((response) => {
+                const copy = response.clone();
+                event.waitUntil(
+                    caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy))
+                );
+                return response;
+            }).catch(async () => {
+                return await caches.match("./index.html")
+                    || await caches.match("./")
+                    || await caches.match("./offline.html");
+            })
         );
         return;
     }
@@ -57,11 +111,12 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
         caches.match(request).then((cached) => {
             if (cached) return cached;
-
             return fetch(request).then((response) => {
                 if (response && response.status === 200) {
                     const copy = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+                    );
                 }
                 return response;
             });
