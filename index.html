@@ -65,7 +65,7 @@
                     <div class="hero-points">
                         <span><b>01</b> Selección de horario</span>
                         <span><b>02</b> Modalidad presencial o remota</span>
-                        <span><b>03</b> Confirmación clara</span>
+                        <span><b>03</b> Seguimiento de solicitudes</span>
                     </div>
                 </div>
 
@@ -73,12 +73,12 @@
                     <div class="visual-heading">
                         <span class="visual-dot"></span>
                         <span>Agenda digital</span>
-                        <span class="visual-tag">Demostración</span>
+                        <span class="visual-tag">Vista previa</span>
                     </div>
                     <div class="appointment-card">
                         <div class="appointment-top">
                             <div>
-                                <span class="small-label">PRÓXIMA CONSULTA</span>
+                                <span class="small-label">AGENDA DE CONSULTAS</span>
                                 <h2>Medicina general</h2>
                             </div>
                             <div class="doctor-avatar" aria-hidden="true">MC</div>
@@ -95,7 +95,7 @@
                             <span class="line-icon" aria-hidden="true">◎</span>
                             <div><small>Modalidad</small><strong>Presencial</strong></div>
                         </div>
-                        <div class="confirmed-label"><span>✓</span> Resumen de cita visible</div>
+                        <div class="confirmed-label"><span>✓</span> Consulta los detalles de tus citas</div>
                     </div>
                     <div class="visual-caption">Información organizada, de un vistazo.</div>
                 </div>
@@ -133,21 +133,21 @@
             </div>
         </section>
 
-        <section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Tu agenda de consultas</h2><p>Regístrate con tu correo electrónico para solicitar y consultar citas. Solo tú puedes acceder a tus solicitudes.</p><p>Proyecto académico: no introduzcas información médica sensible. Las citas no están confirmadas por ninguna clínica.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="section booking-section">
+        <section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Tu agenda de consultas</h2><p>Regístrate con tu correo electrónico para solicitar y consultar citas. Solo tú puedes acceder a tus solicitudes.</p><p>Tus solicitudes son privadas. El registro de una solicitud no confirma la disponibilidad de la consulta.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="section booking-section">
             <div class="container booking-grid">
                 <div class="booking-copy">
                     <span class="eyebrow">Agenda interactiva</span>
                     <h2>Encuentra una opción de consulta.</h2>
                     <p>
-                        Registra una solicitud de consulta en tu cuenta. La solicitud quedará pendiente y no constituye una cita médica confirmada.
+                        Selecciona los datos de tu consulta y envía tu solicitud. Puedes consultar su estado en la sección Mis citas.
                     </p>
                     <div class="innovation-box">
                         <span class="innovation-symbol" aria-hidden="true">✦</span>
                         <div>
-                            <strong>Propuesta de valor</strong>
+                            <strong>Todo en un mismo lugar</strong>
                             <p>
-                                Presentar la disponibilidad y la modalidad en un mismo flujo
-                                ayuda a reducir confusiones durante la reservación.
+                                Elige la fecha, el horario y la modalidad que prefieras,
+                                y revisa los detalles antes de enviar tu solicitud.
                             </p>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                     <label for="date">Fecha</label>
                     <input id="date" name="date" type="date" required>
 
-                    <label for="time">Horario disponible</label>
+                    <label for="time">Horario solicitado</label>
                     <select id="time" name="time" required>
                         <option value="">Selecciona un horario</option>
                         <option>09:00</option>
@@ -266,7 +266,7 @@
         <section class="install-section">
             <div class="container install-panel">
                 <div class="install-copy">
-                    <span class="eyebrow">MediCore PWA</span>
+                    <span class="eyebrow">MediCore en tus dispositivos</span>
                     <h2>Una experiencia web que puede instalarse.</h2>
                     <p>
                         Instala MediCore en tu dispositivo y activa avisos para recibir
@@ -295,7 +295,7 @@
                 <span class="brand-logo" aria-hidden="true">MC</span>
                 <div><strong>MediCore</strong><span>Gestión clínica inteligente</span></div>
             </div>
-            <p>Proyecto académico · Aplicaciones Web Progresivas · UTP</p>
+            <p>MediCore · Tu agenda de consultas en un solo lugar</p>
         </div>
     </footer>
 
