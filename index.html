@@ -34,7 +34,7 @@
 
             <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
                 <a href="#inicio">Inicio</a>
-                <a href="#agenda">Agenda de citas</a>
+                <a href="#agenda">Agenda de citas</a><a href="#cuenta">Mi cuenta</a>
                 <a href="#videoconsulta">Videoconsulta</a>
                 <a href="#clima">Recomendaciones</a>
                 <a href="#catalogo">Enfermedades</a>
@@ -133,15 +133,13 @@
             </div>
         </section>
 
-        <section class="section booking-section">
+        <section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Tu agenda de consultas</h2><p>Regístrate con tu correo electrónico para solicitar y consultar citas. Solo tú puedes acceder a tus solicitudes.</p><p>Proyecto académico: no introduzcas información médica sensible. Las citas no están confirmadas por ninguna clínica.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="section booking-section">
             <div class="container booking-grid">
                 <div class="booking-copy">
                     <span class="eyebrow">Agenda interactiva</span>
                     <h2>Encuentra una opción de consulta.</h2>
                     <p>
-                        Esta demostración muestra cómo podría sentirse el proceso de
-                        agendamiento dentro de MediCore. No se generan citas reales ni se
-                        almacenan datos personales.
+                        Registra una solicitud de consulta en tu cuenta. La solicitud quedará pendiente y no constituye una cita médica confirmada.
                     </p>
                     <div class="innovation-box">
                         <span class="innovation-symbol" aria-hidden="true">✦</span>
@@ -184,13 +182,13 @@
                         <option value="Videoconsulta">Videoconsulta</option>
                     </select>
 
-                    <button class="button primary full-width" type="submit">Ver resumen</button>
+                    <button class="button primary full-width" id="save-appointment" type="submit">Guardar solicitud</button>
                     <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
                 </form>
             </div>
         </section>
 
-        <section class="section media-section" id="videoconsulta">
+        <section class="section" id="mis-citas"><div class="container"><span class="eyebrow">Tu historial</span><h2>Mis citas</h2><p id="appointments-feedback" role="status" aria-live="polite">Inicia sesión para ver tus citas.</p><div class="appointments-grid" id="appointments-list"></div></div></section><section class="section media-section" id="videoconsulta">
             <div class="container media-grid">
                 <div>
                     <span class="eyebrow">Atención conectada</span>

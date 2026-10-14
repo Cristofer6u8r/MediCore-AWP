@@ -79,3 +79,8 @@ Los despliegues de la rama `main` se construyen con `npm install` y arrancan con
 - Después de abrir el sitio al menos una vez, prueba el modo offline desde DevTools.
 - En DevTools → Application → Service Workers, confirma que la versión de caché es `medicore-pwa-v2`.
 - Prueba una suscripción push con un navegador que admita Push API y permisos de notificación.
+
+
+## Citas persistidas en Supabase
+
+Se usa el proyecto existente Medi_core. La tabla public.appointments registra solicitudes asociadas a cuentas de Supabase Auth. La clave publicable se usa en el navegador; no se usan claves secretas. Las políticas RLS restringen datos por usuario. El estado inicial es requested y la cancelación permite pasar a cancelled. Esta app no confirma citas reales. Para confirmación de correos configura en Supabase Auth > URL Configuration el sitio https://medicore-awp-production.up.railway.app y las Redirect URLs válidas. El modo sin conexión cubre la interfaz; guardar citas requiere internet.
