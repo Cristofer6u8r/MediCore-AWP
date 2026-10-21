@@ -53,6 +53,8 @@ function showDoctorWorkspace(enabled) {
     if (brandTagline) brandTagline.textContent = enabled
         ? "Administración de citas" : originalBrandTagline;
     document.title = enabled ? "MediCore | Panel médico" : "MediCore | Agenda médica inteligente";
+    const noticesTitle = document.querySelector("#avisos-citas h2");
+    if (noticesTitle) noticesTitle.textContent = enabled ? "Avisos del consultorio" : "Avisos de tus citas";
     if (enabled !== wasDoctor) {
         cleanBrowserAddress(true);
         window.scrollTo(0, 0);
