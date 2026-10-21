@@ -121,7 +121,7 @@ function addAppointmentCard(item,asDoctor=false) {
       try {
         const result=await api("appointments?id=eq."+encodeURIComponent(item.id)+"&status=eq.requested","PATCH",{status:"cancelled"});
         if (!Array.isArray(result)||result.length!==1) throw Error("Esta solicitud ya no está pendiente.");
-        await loadPatientAppointments();
+        if(page==="home")await loadHome();else await loadPatientAppointments();
       } catch(e){message("appointments-feedback",e.message);cancel.disabled=false;}
     });
     card.append(cancel);
@@ -419,6 +419,17 @@ function configureNavigation(){
   }
 }
 async function boot(){
+  // Enlaces guardados y antiguas notificaciones de la versión de una sola pantalla.
+  if(page==="home" && location.hash){
+    const legacy={
+      "#avisos-citas":"avisos.html","#mis-citas":"citas.html",
+      "#solicitar-cita":"agendar.html","#agenda":"agendar.html",
+      "#cuenta":"cuenta.html","#panel-medico":"medico.html",
+      "#videoconsulta":"informacion.html","#clima":"informacion.html","#catalogo":"informacion.html"
+    };
+    const target=legacy[location.hash.toLowerCase()];
+    if(target){window.location.replace("./"+target);return;}
+  }
   initMenu();initInstall();
   if("serviceWorker" in navigator){
     window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
