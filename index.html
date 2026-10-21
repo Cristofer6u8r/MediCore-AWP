@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0B3B60">
+    <meta name="theme-color" content="#12304A">
     <meta name="description" content="MediCore facilita la organización de citas médicas para consultorios pequeños.">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,6 +13,7 @@
     <link rel="icon" href="./assets/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./clinic.css">
     <title>MediCore | Agenda médica inteligente</title>
 </head>
 <body>
@@ -34,10 +35,13 @@
 
             <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
                 <a href="#inicio">Inicio</a>
-                <a href="#agenda">Agenda de citas</a><a href="#cuenta">Mi cuenta</a><a href="#panel-medico" id="doctor-nav" class="doctor-link" hidden>Panel médico</a><a href="#avisos-citas" id="doctor-notices-nav" class="doctor-link" hidden>Avisos</a><a href="#cuenta" id="doctor-account-nav" class="doctor-link" hidden>Mi cuenta</a>
-                <a href="#videoconsulta">Videoconsulta</a>
-                <a href="#clima">Recomendaciones</a>
-                <a href="#catalogo">Enfermedades</a>
+                <a href="#solicitar-cita" class="nav-primary-link">Agendar cita</a>
+                <a href="#mis-citas">Mis citas</a>
+                <a href="#avisos-citas">Avisos</a>
+                <a href="#cuenta">Mi cuenta</a>
+                <a href="#panel-medico" id="doctor-nav" class="doctor-link" hidden>Panel médico</a>
+                <a href="#avisos-citas" id="doctor-notices-nav" class="doctor-link" hidden>Avisos</a>
+                <a href="#cuenta" id="doctor-account-nav" class="doctor-link" hidden>Mi cuenta</a>
             </nav>
         </div>
     </header>
@@ -45,73 +49,71 @@
     <div class="role-loading" id="role-loading" hidden aria-live="polite">Preparando tu espacio de trabajo...</div>
 
     <main>
-        <section class="hero">
+        <section class="hero" aria-labelledby="hero-title">
             <div class="container hero-grid">
                 <div class="hero-copy">
-                    <span class="eyebrow">Tecnología al servicio de la salud</span>
-                    <h1>La atención médica empieza con una <span>buena agenda.</span></h1>
-                    <p>
-                        MediCore integra la organización de citas con herramientas
-                        digitales para consultorios pequeños. Una experiencia clara
-                        ayuda a pacientes y personal clínico a aprovechar mejor su tiempo.
-                    </p>
+                    <span class="eyebrow hero-kicker"><span class="kicker-dot" aria-hidden="true"></span> PORTAL DE CITAS Y VIDEOCONSULTAS</span>
+                    <h1 id="hero-title">Tu atención, <span>mejor organizada.</span></h1>
+                    <p>Un espacio sencillo para solicitar consultas, revisar su estado y tener tus próximas citas en orden. Todo desde MediCore.</p>
                     <div class="hero-actions">
-                        <a class="button primary" href="#agenda">Explorar agenda</a>
-                        <button class="button secondary install-button" id="install-button" type="button" hidden>
-                            Instalar MediCore
-                        </button>
+                        <a class="button primary" href="#solicitar-cita"><span aria-hidden="true">＋</span> Agendar una cita</a>
+                        <a class="button secondary" href="#mis-citas">Consultar mis citas <span aria-hidden="true">↗</span></a>
+                        <button class="button secondary install-button" id="install-button" type="button" hidden>Instalar MediCore</button>
                     </div>
-                    <p class="install-hint" id="install-hint" aria-live="polite">
-                        Agenda, seguimiento y atención digital en una sola experiencia.
-                    </p>
-                    <div class="hero-points">
-                        <span><b>01</b> Selección de horario</span>
-                        <span><b>02</b> Modalidad presencial o remota</span>
-                        <span><b>03</b> Seguimiento de solicitudes</span>
+                    <p class="install-hint" id="install-hint">Organiza tus solicitudes sin perder de vista los detalles importantes.</p>
+                    <div class="hero-points" aria-label="Funciones principales">
+                        <span><b aria-hidden="true">✓</b> Solicitudes en línea</span>
+                        <span><b aria-hidden="true">✓</b> Seguimiento de citas</span>
+                        <span><b aria-hidden="true">✓</b> Consulta presencial o virtual</span>
                     </div>
                 </div>
-
-                <div class="hero-visual">
+                <div class="hero-visual" aria-label="Vista ilustrativa de cómo se organizan las citas en MediCore">
                     <div class="visual-heading">
-                        <span class="visual-dot"></span>
-                        <span>Agenda digital</span>
-                        <span class="visual-tag">Vista previa</span>
+                        <span class="visual-dot" aria-hidden="true"></span>
+                        <span>MI AGENDA DE ATENCIÓN</span>
+                        <span class="visual-tag">Ejemplo</span>
                     </div>
                     <div class="appointment-card">
                         <div class="appointment-top">
                             <div>
-                                <span class="small-label">AGENDA DE CONSULTAS</span>
-                                <h2>Medicina general</h2>
+                                <span class="small-label">CONSULTA PROGRAMADA</span>
+                                <h2>Tu próxima consulta</h2>
                             </div>
-                            <div class="doctor-avatar" aria-hidden="true">MC</div>
+                            <div class="doctor-avatar" aria-hidden="true">✚</div>
                         </div>
                         <div class="appointment-line">
                             <span class="line-icon" aria-hidden="true">▦</span>
-                            <div><small>Fecha</small><strong>Martes, 6 de octubre</strong></div>
+                            <div><small>Especialidad</small><strong>Medicina general</strong></div>
                         </div>
                         <div class="appointment-line">
                             <span class="line-icon" aria-hidden="true">◷</span>
-                            <div><small>Horario</small><strong>12:00 h</strong></div>
+                            <div><small>Horario</small><strong>Selecciona el que prefieras</strong></div>
                         </div>
                         <div class="appointment-line">
-                            <span class="line-icon" aria-hidden="true">◎</span>
-                            <div><small>Modalidad</small><strong>Presencial</strong></div>
+                            <span class="line-icon" aria-hidden="true">⌁</span>
+                            <div><small>Modalidad</small><strong>Presencial o videoconsulta</strong></div>
                         </div>
-                        <div class="confirmed-label"><span>✓</span> Consulta los detalles de tus citas</div>
+                        <div class="confirmed-label"><span aria-hidden="true">✓</span> Sigue el estado desde Mis citas</div>
                     </div>
-                    <div class="visual-caption">Información organizada, de un vistazo.</div>
+                    <div class="visual-caption">Vista ilustrativa. Las citas reales se muestran al iniciar sesión.</div>
                 </div>
             </div>
         </section>
+        <div class="care-strip" aria-label="Beneficios de MediCore">
+            <div class="container care-strip-inner">
+                <span><strong>01</strong> Elige tu consulta</span>
+                <span><strong>02</strong> Envía tu solicitud</span>
+                <span><strong>03</strong> Recibe una respuesta</span>
+            </div>
+        </div>
 
         <section class="section" id="agenda">
             <div class="container">
                 <div class="section-heading">
                     <span class="eyebrow">Agenda de citas</span>
-                    <h2>Organizar una consulta puede ser sencillo.</h2>
+                    <h2>Así funciona tu agenda en MediCore</h2>
                     <p>
-                        La agenda digital permite revisar especialidad, fecha, horario y
-                        modalidad antes de enviar una solicitud de cita.
+                        Tres pasos para enviar tu solicitud y revisar su estado sin llamadas ni papeleo.
                     </p>
                 </div>
 
@@ -135,13 +137,13 @@
             </div>
         </section>
 
-        <section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Tu agenda de consultas</h2><p>Regístrate con tu correo electrónico para solicitar y consultar citas. Solo tú puedes acceder a tus solicitudes.</p><p>Tus solicitudes son privadas. El registro de una solicitud no confirma la disponibilidad de la consulta.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="section booking-section">
+        <section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Accede a tu espacio de citas</h2><p>Inicia sesión para agendar consultas, revisar tus solicitudes y recibir avisos.</p><p>Tus solicitudes son privadas. El registro de una solicitud no confirma la disponibilidad de la consulta.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="section booking-section" id="solicitar-cita">
             <div class="container booking-grid">
                 <div class="booking-copy">
                     <span class="eyebrow">Agenda interactiva</span>
-                    <h2>Encuentra una opción de consulta.</h2>
+                    <h2>Agenda tu próxima consulta</h2>
                     <p>
-                        Selecciona los datos de tu consulta y envía tu solicitud. Puedes consultar su estado en la sección Mis citas.
+                        Elige una especialidad, la fecha y el horario que necesites. Revisaremos tu solicitud desde la agenda del consultorio.
                     </p>
                     <div class="innovation-box">
                         <span class="innovation-symbol" aria-hidden="true">✦</span>
@@ -190,15 +192,14 @@
             </div>
         </section>
 
-        <section class="section" id="avisos-citas"><div class="container"><span class="eyebrow">Actualizaciones</span><h2>Avisos de tus citas</h2><p id="notices-feedback" role="status">Inicia sesión para consultar tus avisos.</p><div id="notices-list" class="appointments-grid"></div></div></section><section class="section" id="mis-citas"><div class="container"><span class="eyebrow">Tu historial</span><h2>Mis citas</h2><p id="appointments-feedback" role="status" aria-live="polite">Inicia sesión para ver tus citas.</p><div class="appointments-grid" id="appointments-list"></div></div></section><section class="section doctor-panel" id="panel-medico" hidden><div class="container"><span class="eyebrow">Administración de citas</span><h2>Panel del médico</h2><p>Gestiona las solicitudes y horarios desde una sola agenda.</p><div class="doctor-stats" id="doctor-stats"></div><div class="doctor-filters"><label>Buscar por especialidad, fecha o estado <input id="doctor-search" type="search" placeholder="Buscar en la agenda"></label><label>Estado <select id="doctor-filter"><option value="">Todas</option><option value="requested">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></label><button type="button" class="button outline" id="doctor-refresh">Actualizar agenda</button></div><p id="doctor-feedback" role="status"></p><div id="doctor-appointments" class="appointments-grid"></div></div></section><section class="section media-section" id="videoconsulta">
+        <section class="section" id="avisos-citas"><div class="container"><span class="eyebrow">Actualizaciones</span><h2>Avisos de tus citas</h2><p id="notices-feedback" role="status">Inicia sesión para consultar tus avisos.</p><div id="notices-list" class="appointments-grid"></div></div></section><section class="section" id="mis-citas"><div class="container"><span class="eyebrow">Tu historial</span><h2>Mis citas</h2><p class="section-lead">Revisa tus solicitudes, confirma cuándo te toca asistir y accede a tus consultas virtuales.</p><div id="patient-overview" class="patient-overview" aria-label="Resumen de tus citas"></div><p id="appointments-feedback" role="status" aria-live="polite">Inicia sesión para ver tus citas.</p><div class="appointments-grid" id="appointments-list"></div></div></section><section class="section doctor-panel" id="panel-medico" hidden><div class="container"><span class="eyebrow">Administración de citas</span><h2>Centro de gestión de citas</h2><p>Revisa la actividad del consultorio, responde solicitudes y organiza la agenda desde un mismo lugar.</p><div class="doctor-intro-note"><span class="doctor-intro-icon" aria-hidden="true">✚</span><span>Espacio de trabajo del médico · Una sola agenda, todas las solicitudes.</span></div><div class="doctor-stats" id="doctor-stats"></div><div class="doctor-filters"><label>Buscar por especialidad, fecha o estado <input id="doctor-search" type="search" placeholder="Buscar en la agenda"></label><label>Estado <select id="doctor-filter"><option value="">Todas</option><option value="requested">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></label><button type="button" class="button outline" id="doctor-refresh">Actualizar agenda</button></div><p id="doctor-feedback" role="status"></p><div id="doctor-appointments" class="appointments-grid"></div></div></section><section class="section media-section" id="videoconsulta">
             <div class="container media-grid">
                 <div>
                     <span class="eyebrow">Atención conectada</span>
-                    <h2>De la agenda a la videoconsulta.</h2>
+                    <h2>Videoconsultas, desde tu agenda.</h2>
                     <p>
                         Para los casos apropiados, una cita puede realizarse a distancia.
-                        La videoconsulta amplía las opciones de atención y complementa la
-                        agenda digital del consultorio.
+                        Si tu cita virtual está confirmada, encontrarás un acceso directo a la reunión en Mis citas. El médico inicia la sesión y después puedes unirte.
                     </p>
                     <ul class="feature-list">
                         <li><strong>Agenda organizada</strong><span>Horarios visibles y fáciles de revisar.</span></li>
