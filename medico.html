@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gestión de citas y videoconsultas MediCore.">
+<meta name="theme-color" content="#12304A">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MediCore">
+<link rel="icon" href="./assets/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./clinic.css"><link rel="stylesheet" href="./portal.css">
+<title>Panel médico | MediCore</title>
+</head>
+<body data-page="medico" class="role-pending">
+<header class="site-header"><div class="container header-inner">
+<a class="brand" href="./index.html" aria-label="MediCore, inicio"><span class="brand-logo" aria-hidden="true">MC</span><span class="brand-text"><strong>MediCore</strong><small>Portal de citas</small></span></a>
+<button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
+<nav class="main-nav" id="main-nav" aria-label="Menú principal"><a href="./index.html" data-role="patient">Inicio</a>
+<a href="./agendar.html" data-role="patient">Agendar cita</a>
+<a href="./citas.html" data-role="patient">Mis citas</a>
+<a href="./avisos.html" data-role="patient">Avisos</a>
+<a href="./informacion.html" data-role="patient">Información</a>
+<a href="./cuenta.html" data-role="patient">Mi cuenta</a>
+<a href="./medico.html" data-role="doctor" class="doctor-link" hidden aria-current="page">Panel médico</a>
+<a href="./avisos.html" data-role="doctor" class="doctor-link" hidden>Avisos</a>
+<a href="./cuenta.html" data-role="doctor" class="doctor-link" hidden>Mi cuenta</a></nav>
+</div></header>
+<div id="role-loading" class="role-loading" aria-live="polite">Preparando tu espacio de trabajo…</div>
+<main><section class="portal-heading"><div class="container"><span class="eyebrow">GESTIÓN DEL CONSULTORIO</span><h1>Panel médico</h1><p>Solicitudes, agenda y videoconsultas de tu consultorio en una sola vista.</p></div></section><section class="section doctor-panel" id="panel-medico" hidden><div class="container"><span class="eyebrow">Administración de citas</span><h2>Centro de gestión de citas</h2><p>Revisa la actividad del consultorio, responde solicitudes y organiza la agenda desde un mismo lugar.</p><div id="doctor-push-slot" class="doctor-push-slot"><button class="button primary" id="notification-button" type="button">Activar notificaciones</button><p class="notification-help" id="notification-help" aria-live="polite">Recibe notificaciones de nuevas solicitudes.</p></div><div class="doctor-intro-note"><span class="doctor-intro-icon" aria-hidden="true">✚</span><span>Espacio de trabajo del médico · Una sola agenda, todas las solicitudes.</span></div><div class="doctor-stats" id="doctor-stats"></div><div class="doctor-filters"><label>Buscar por especialidad, fecha o estado <input id="doctor-search" type="search" placeholder="Buscar en la agenda"></label><label>Estado <select id="doctor-filter"><option value="">Todas</option><option value="requested">Pendientes</option><option value="confirmed">Confirmadas</option><option value="cancelled">Canceladas</option></select></label><button type="button" class="button outline" id="doctor-refresh">Actualizar agenda</button></div><p id="doctor-feedback" role="status"></p><div id="doctor-appointments" class="appointments-grid"></div></div></section></main>
+<footer class="site-footer"><div class="container footer-inner"><div class="footer-brand"><span class="brand-logo" aria-hidden="true">MC</span><div><strong>MediCore</strong><span>Portal de citas y videoconsultas</span></div></div><p>Gestiona tus citas en un solo lugar.</p></div></footer>
+<div id="network-status" class="network-status" role="status" aria-live="polite"></div>
+<script src="./portal.js" defer></script>
+</body></html>
