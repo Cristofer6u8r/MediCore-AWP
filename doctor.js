@@ -5,6 +5,14 @@ const doctorNav = document.getElementById("doctor-nav");
 const doctorNoticesNav = document.getElementById("doctor-notices-nav");
 const doctorAccountNav = document.getElementById("doctor-account-nav");
 const roleLoading = document.getElementById("role-loading");
+const doctorPushSlot = document.getElementById("doctor-push-slot");
+const patientPushSlot = document.querySelector(".install-actions");
+function positionPushControl(doctorMode) {
+    if (!doctorPushSlot || !patientPushSlot || !notificationButton || !notificationHelp) return;
+    doctorPushSlot.hidden = !doctorMode;
+    const destination = doctorMode ? doctorPushSlot : patientPushSlot;
+    destination.append(notificationButton, notificationHelp);
+}
 const brandLink = document.querySelector("a.brand");
 const brandTagline = document.querySelector(".brand-text small");
 const originalBrandTagline = brandTagline?.textContent || "Gestión clínica inteligente";
@@ -46,6 +54,7 @@ function showDoctorWorkspace(enabled) {
     const wasDoctor = document.body.classList.contains("doctor-mode");
     document.body.classList.toggle("doctor-mode", Boolean(enabled));
     doctorPanel.hidden = !enabled;
+    positionPushControl(enabled);
     for (const item of [doctorNav, doctorNoticesNav, doctorAccountNav]) {
         if (item) item.hidden = !enabled;
     }
