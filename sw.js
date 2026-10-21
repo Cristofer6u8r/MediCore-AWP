@@ -1,8 +1,9 @@
-const CACHE_NAME = "medicore-pwa-v6";
+const CACHE_NAME = "medicore-pwa-v7";
 const APP_SHELL = [
     "./",
     "./index.html",
     "./style.css",
+    "./clinic.css",
     "./script.js",
     "./doctor.js",
     "./manifest.json",
