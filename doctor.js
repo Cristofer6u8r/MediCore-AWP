@@ -28,7 +28,7 @@ function calendarLink(item){
     return "https://calendar.google.com/calendar/render?"+p.toString();
 }
 function videoButton(item){
-    if(item.status!=="confirmed"||item.modality!=="Videoconsulta"||!/^medicore-[a-f0-9]{36}$/.test(item.meeting_room||""))return null;
+    if(item.status!=="confirmed"||item.modality!=="Videoconsulta"||!/^medicore-[a-f0-9-]{36}$/.test(item.meeting_room||""))return null;
     const a=make("a","Entrar a videoconsulta","button primary");
     a.href="https://meet.jit.si/"+encodeURIComponent(item.meeting_room);
     a.target="_blank";a.rel="noopener noreferrer";
@@ -77,7 +77,6 @@ async function syncDoctorUI(){
     try{
         const enabled=await rpc("is_medicore_doctor",{});
         if(tokenId!==doctorEpoch)return;
-        doctorActive===Boolean(enabled);
         doctorActive=enabled===true;
         doctorPanel.hidden=!doctorActive;doctorNav.hidden=!doctorActive;
         await Promise.all([loadNotices(),doctorActive?loadDoctorAppointments():Promise.resolve()]);
