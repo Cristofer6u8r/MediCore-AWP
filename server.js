@@ -122,6 +122,73 @@ function authorizedForBroadcast(req) {
     return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(provided));
 }
 
+
+const SUPABASE_AUTH_URL = "https://pjayxdpuseaidlovkrpz.supabase.co/auth/v1/user";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_iRaiRLXFVCIkKevN-PqZng_Gaxe1sw8";
+
+async function authenticatedUser(req) {
+    const header = req.headers.authorization || "";
+    if (typeof header !== "string" || !header.startsWith("Bearer ")) return null;
+    const accessToken = header.slice(7).trim();
+    if (!accessToken || accessToken.length > 8192) return null;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 7000);
+    try {
+        const response = await fetch(SUPABASE_AUTH_URL, {
+            headers: {
+                apikey: SUPABASE_PUBLISHABLE_KEY,
+                Authorization: "Bearer " + accessToken
+            },
+            cache: "no-store",
+            signal: controller.signal
+        });
+        if (!response.ok) return null;
+        const user = await response.json();
+        return /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(user?.id || "") ? user.id : null;
+    } catch (error) {
+        console.warn("No se pudo comprobar la sesión del dispositivo.", error.message);
+        return null;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+function authorizedForNoticeWebhook(req) {
+    const expected = process.env.PUSH_WEBHOOK_TOKEN || "";
+    const provided = req.headers["x-medicore-webhook-token"] || "";
+    if (typeof provided !== "string" || !expected || !provided || provided.length !== expected.length) return false;
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(provided));
+}
+
+async function sendUserNotification(userId, message) {
+    const subscriptions = await readSubscriptions();
+    const devices = subscriptions.filter((item) => item.userId === userId);
+    const expiredEndpoints = new Set();
+    let sent = 0;
+    let failed = 0;
+    await Promise.all(devices.map(async (device) => {
+        try {
+            await webpush.sendNotification(device, JSON.stringify({
+                title: "MediCore · Citas",
+                body: message,
+                url: "/#avisos-citas"
+            }));
+            sent += 1;
+        } catch (error) {
+            failed += 1;
+            if ([404, 410].includes(error.statusCode)) {
+                expiredEndpoints.add(device.endpoint);
+            } else {
+                console.warn("No se pudo enviar un aviso push.", error.statusCode || error.message);
+            }
+        }
+    }));
+    if (expiredEndpoints.size) {
+        await writeSubscriptions(subscriptions.filter((item) => !expiredEndpoints.has(item.endpoint)));
+    }
+    return { sent, failed, subscribedDevices: devices.length };
+}
+
 function clientKey(req) {
     // The address is used only for a small in-memory limit on test notifications.
     return req.socket.remoteAddress || "unknown";
@@ -141,7 +208,11 @@ async function handleApi(req, res, pathname) {
             sendJson(res, 503, { error: "El servicio de notificaciones no está configurado." });
             return true;
         }
-
+        const userId = await authenticatedUser(req);
+        if (!userId) {
+            sendJson(res, 401, { error: "Inicia sesión para activar las notificaciones de tus citas." });
+            return true;
+        }
         let subscription;
         try {
             subscription = await readJson(req);
@@ -151,12 +222,10 @@ async function handleApi(req, res, pathname) {
             });
             return true;
         }
-
         if (!validSubscription(subscription)) {
             sendJson(res, 400, { error: "La suscripción push no es válida." });
             return true;
         }
-
         try {
             const subscriptions = await readSubscriptions();
             const existing = subscriptions.find((item) => item.endpoint === subscription.endpoint);
@@ -167,12 +236,13 @@ async function handleApi(req, res, pathname) {
                     p256dh: subscription.keys.p256dh,
                     auth: subscription.keys.auth
                 },
+                userId,
                 createdAt: existing ? existing.createdAt : new Date().toISOString()
             };
             const updated = subscriptions.filter((item) => item.endpoint !== subscription.endpoint);
             updated.push(safeSubscription);
             await writeSubscriptions(updated);
-            sendJson(res, 201, { ok: true });
+            sendJson(res, existing ? 200 : 201, { ok: true, linked: true });
         } catch (error) {
             console.error("No se pudo guardar una suscripción push:", error.message);
             sendJson(res, 500, { error: "No se pudo guardar la suscripción." });
@@ -181,6 +251,11 @@ async function handleApi(req, res, pathname) {
     }
 
     if (req.method === "DELETE" && pathname === "/api/push/subscribe") {
+        const userId = await authenticatedUser(req);
+        if (!userId) {
+            sendJson(res, 401, { error: "Inicia sesión para desactivar las notificaciones." });
+            return true;
+        }
         let body;
         try {
             body = await readJson(req);
@@ -189,15 +264,16 @@ async function handleApi(req, res, pathname) {
             return true;
         }
         if (typeof body.endpoint !== "string") {
-            sendJson(res, 400, { error: "Falta el endpoint de la suscripción." });
+            sendJson(res, 400, { error: "Falta el dispositivo." });
             return true;
         }
         try {
             const subscriptions = await readSubscriptions();
-            await writeSubscriptions(subscriptions.filter((item) => item.endpoint !== body.endpoint));
+            await writeSubscriptions(subscriptions.filter((item) =>
+                item.endpoint !== body.endpoint || item.userId !== userId));
             sendJson(res, 200, { ok: true });
         } catch (error) {
-            sendJson(res, 500, { error: "No se pudo eliminar la suscripción." });
+            sendJson(res, 500, { error: "No se pudo desactivar la suscripción." });
         }
         return true;
     }
@@ -207,15 +283,18 @@ async function handleApi(req, res, pathname) {
             sendJson(res, 503, { error: "El servicio de notificaciones no está configurado." });
             return true;
         }
-
+        const userId = await authenticatedUser(req);
+        if (!userId) {
+            sendJson(res, 401, { error: "Inicia sesión para probar tus notificaciones." });
+            return true;
+        }
         const now = Date.now();
-        const ip = clientKey(req);
-        const lastRequest = recentTestRequests.get(ip) || 0;
+        const key = userId;
+        const lastRequest = recentTestRequests.get(key) || 0;
         if (now - lastRequest < 60000) {
             sendJson(res, 429, { error: "Espera un minuto antes de volver a enviar una prueba." });
             return true;
         }
-
         let body;
         try {
             body = await readJson(req);
@@ -224,34 +303,64 @@ async function handleApi(req, res, pathname) {
             return true;
         }
         if (typeof body.endpoint !== "string") {
-            sendJson(res, 400, { error: "Falta el endpoint de este dispositivo." });
+            sendJson(res, 400, { error: "Falta el dispositivo." });
             return true;
         }
-
         try {
             const subscriptions = await readSubscriptions();
-            const subscription = subscriptions.find((item) => item.endpoint === body.endpoint);
+            const subscription = subscriptions.find((item) => item.endpoint === body.endpoint && item.userId === userId);
             if (!subscription) {
-                sendJson(res, 404, { error: "Este dispositivo no tiene una suscripción guardada." });
+                sendJson(res, 404, { error: "Este dispositivo no está vinculado a tu cuenta." });
                 return true;
             }
-
-            recentTestRequests.set(ip, now);
+            recentTestRequests.set(key, now);
             await webpush.sendNotification(subscription, JSON.stringify({
                 title: "MediCore",
-                body: "Las notificaciones de MediCore están activas en este dispositivo.",
-                url: "/"
+                body: "Las notificaciones de tus citas están activas en este dispositivo.",
+                url: "/#avisos-citas"
             }));
             sendJson(res, 200, { ok: true });
         } catch (error) {
-            if (error.statusCode === 404 || error.statusCode === 410) {
+            if ([404, 410].includes(error.statusCode)) {
                 const subscriptions = await readSubscriptions().catch(() => []);
                 await writeSubscriptions(subscriptions.filter((item) => item.endpoint !== body.endpoint)).catch(() => {});
-                sendJson(res, 410, { error: "La suscripción caducó. Activa las notificaciones de nuevo." });
+                sendJson(res, 410, { error: "Tu suscripción caducó. Activa las notificaciones de nuevo." });
             } else {
                 console.error("Falló la notificación de prueba:", error.message);
-                sendJson(res, 502, { error: "El proveedor push no aceptó la notificación." });
+                sendJson(res, 502, { error: "No se pudo enviar la notificación de prueba." });
             }
+        }
+        return true;
+    }
+
+    if (req.method === "POST" && pathname === "/api/push/appointment-notice") {
+        if (!authorizedForNoticeWebhook(req)) {
+            sendJson(res, 401, { error: "No autorizado." });
+            return true;
+        }
+        if (!pushConfigured) {
+            sendJson(res, 503, { error: "Las notificaciones push no están configuradas." });
+            return true;
+        }
+        let body;
+        try {
+            body = await readJson(req);
+        } catch {
+            sendJson(res, 400, { error: "Aviso inválido." });
+            return true;
+        }
+        const userId = typeof body.user_id === "string" ? body.user_id : "";
+        const message = typeof body.message === "string" ? body.message.trim().slice(0, 250) : "";
+        if (!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(userId) || !message) {
+            sendJson(res, 400, { error: "Los datos del aviso no son válidos." });
+            return true;
+        }
+        try {
+            const result = await sendUserNotification(userId, message);
+            sendJson(res, 200, { ok: true, ...result });
+        } catch (error) {
+            console.error("Falló la entrega de avisos de citas:", error.message);
+            sendJson(res, 500, { error: "No se pudo entregar el aviso." });
         }
         return true;
     }
