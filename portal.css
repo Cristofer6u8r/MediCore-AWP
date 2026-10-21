@@ -1,0 +1,98 @@
+/* MediCore: diseño de páginas reales, con base visual consistente */
+body {background:#f6f8fb;color:#21394e}
+body.role-pending main,body.role-pending footer{visibility:hidden}
+body:not(.role-pending) #role-loading{display:none}
+#role-loading{min-height:54vh;padding:120px 20px;text-align:center;color:#31536a;font-weight:700}
+[hidden]{display:none!important}
+.site-header{position:sticky;top:0;z-index:55;box-shadow:0 2px 17px rgba(21,47,65,.04)}
+.header-inner{min-height:74px}
+.site-header .brand{white-space:nowrap}
+.main-nav a[aria-current="page"]{color:#087d72;background:#e5f4f0}
+.main-nav a[data-role="doctor"][aria-current="page"]{background:#e2f4ef;color:#08786d}
+.portal-heading{padding:48px 0 39px;background:linear-gradient(120deg,#edf5f7,#f9fbfc);border-bottom:1px solid #e0eaf0}
+.portal-heading .eyebrow{display:block;margin-bottom:10px}
+.portal-heading h1{color:#1b384f;letter-spacing:-.05em;font-size:clamp(2rem,4vw,3.2rem);line-height:1.13;margin-bottom:11px}
+.portal-heading p{color:#5e7586;line-height:1.65;font-size:.96rem;max-width:720px;margin:0}
+main{min-height:calc(100vh - 213px)}
+main>.section{padding:43px 0 82px;background:transparent}
+main>.section.booking-section{background:transparent;border:0}
+main>.section.account-section{background:transparent}
+main>.section#mis-citas,main>.section#avisos-citas{background:transparent;border:0}
+main>.section#panel-medico{padding-top:38px;background:transparent}
+main>.section#videoconsulta{background:#fff}
+main>.section#clima{background:#f1f6f9}
+main>.section#catalogo{background:#eaf3f4;color:#1f4055}
+main>.section#cuenta{background:transparent}
+main>.section#cuenta .account-grid{align-items:center}
+main>.section#cuenta .account-grid>div:first-child{max-width:480px}
+main>.section#cuenta .account-grid>div:first-child h2{font-size:clamp(1.5rem,2.8vw,2.3rem)}
+main>.section#solicitar-cita .booking-copy{padding:15px 0}
+main>.section#solicitar-cita .booking-copy h2{font-size:clamp(1.6rem,3vw,2.4rem)}
+main>.section#solicitar-cita .booking-copy .innovation-box{margin-top:25px}
+main>.section#avisos-citas .container,
+main>.section#mis-citas .container{max-width:1180px}
+body.doctor-mode main{display:block!important}
+body.doctor-mode main>*{display:block!important}
+body.doctor-mode main>section[hidden]{display:none!important}
+body.doctor-mode main>section.portal-heading{display:block!important}
+body.doctor-mode .site-footer{display:block!important}
+body.doctor-mode .main-nav a[data-role="doctor"]{display:inline-flex!important}
+body.doctor-mode .main-nav a[data-role="patient"]{display:none!important}
+body.doctor-mode main>.section#panel-medico{padding:30px 0 80px}
+body.doctor-mode main>.section#avisos-citas{padding:43px 0 80px;background:transparent}
+body.doctor-mode main>.section#cuenta{padding:48px 0 80px;background:transparent}
+body.doctor-mode main>.section#cuenta .account-grid>div:first-child{display:block!important}
+body.doctor-mode main>.section#cuenta .account-grid{display:grid;max-width:1180px;grid-template-columns:.9fr 1.1fr}
+body.doctor-mode .brand-text small{color:#618398}
+body.doctor-mode .site-footer{background:#102c43!important}
+body.doctor-mode #panel-medico{min-height:50vh}
+body.doctor-mode .doctor-push-slot:not([hidden]){display:flex!important}
+.portal-home{padding:48px 0 75px}
+.portal-home-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:26px;align-items:stretch}
+.portal-home-intro{padding:58px 55px;border-radius:22px;background:linear-gradient(120deg,#0e374b,#1b6870);color:#fff;overflow:hidden;position:relative}
+.portal-home-intro:after{content:"";width:420px;height:420px;border:1px solid #ffffff21;border-radius:50%;position:absolute;right:-215px;top:-225px;pointer-events:none;box-shadow:0 0 0 70px #ffffff08}
+.portal-home-intro .eyebrow{color:#bdebe0;font-size:.72rem;position:relative;z-index:1}
+.portal-home-intro h1{font-size:clamp(2.2rem,3.9vw,3.65rem);line-height:1.12;letter-spacing:-.055em;color:#fff;max-width:640px;margin-bottom:20px;position:relative;z-index:1}
+.portal-home-intro p{color:#d6e7e9;max-width:560px;font-size:1.01rem;line-height:1.7;position:relative;z-index:1}
+.portal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:33px;position:relative;z-index:1}
+.portal-actions .button.primary{background:#fff;color:#0f5b60;border-color:#fff;box-shadow:none}
+.portal-actions .button.outline{background:transparent;border-color:#91c7c9;color:#fff}
+.portal-actions .button.primary:hover{background:#f3f9f9}
+.portal-actions .button.outline:hover{background:#ffffff21}
+.portal-home-side{padding:30px 26px;border:1px solid #dbe7ed;border-radius:20px;background:#fff;box-shadow:0 14px 28px rgba(21,51,71,.045);display:flex;flex-direction:column;gap:5px}
+.side-label{font-size:.7rem;font-weight:850;letter-spacing:.12em;color:#1c8b7c;margin:0 0 16px}
+.portal-home-side>a{display:block;border:1px solid transparent;border-radius:12px;padding:15px 12px;color:#234157;transition:background .2s}
+.portal-home-side>a+a{border-top:1px solid #edf2f5}
+.portal-home-side>a:hover{background:#f1f8f9;border-color:#dcebec}
+.portal-home-side>a strong{font-size:1rem;display:block;margin-bottom:4px;font-weight:790}
+.portal-home-side>a span{font-size:.81rem;color:#718796;line-height:1.55;display:block}
+.portal-home-side>a b{float:right;color:#0e9584;font-size:1.2rem}
+.portal-compact{padding-top:50px}
+.portal-section-row{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.portal-section-row .eyebrow{margin-bottom:7px;display:block}
+.portal-section-row h2{font-size:clamp(1.6rem,2.7vw,2.3rem);margin:0}
+.text-link{color:#097e77;font-size:.86rem;font-weight:800;letter-spacing:-.01em}
+.portal-compact>.appointments-grid:empty:before{content:"No hay próximas consultas"}
+.portal-compact .steps{margin-top:20px}
+.portal-compact .step-card{background:#fff;padding:26px}
+.portal-compact .step-number{margin-bottom:12px}
+.portal-compact .step-card h3{font-size:1.03rem}
+.portal-compact .step-card p{font-size:.85rem}
+.saved-appointment{height:fit-content}
+.card-actions{display:flex;flex-wrap:wrap;gap:9px;margin:17px 0 5px}
+.card-actions .button{margin:0!important}
+#home-upcoming{margin-top:6px}
+#home-upcoming>.saved-appointment{max-width:540px}
+.doctor-panel .doctor-stats{margin-top:19px}
+.doctor-panel .doctor-push-slot{margin-top:20px}
+.install-section{padding:0 0 65px;background:transparent}
+.install-panel{padding:28px 33px}
+.install-panel h2{font-size:1.5rem}
+.install-panel p{font-size:.88rem}
+#auth-feedback,#form-message{overflow-wrap:anywhere}
+#auth-form[hidden],#signed-in[hidden]{display:none!important}
+body[data-page="cuenta"] .role-loading{display:none}
+body.doctor-mode .main-nav a:not(.doctor-link){display:none!important}
+@media(max-width:1000px){.portal-home-hero{grid-template-columns:1fr}.portal-home-side{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}.portal-home-side .side-label{grid-column:1/-1;margin:0}.portal-home-side>a+a{border-top:0}.portal-home-side>a{padding:14px}}
+@media(max-width:900px){body.doctor-mode .main-nav a[data-role="doctor"]{display:flex!important}.portal-home-side{grid-template-columns:1fr}.portal-home-side>a+a{border-top:1px solid #edf2f5}}
+@media(max-width:700px){.portal-heading{padding:33px 0}.portal-home{padding:24px 0 50px}.portal-home-intro{padding:38px 25px}.portal-home-side{padding:22px}.portal-compact{padding-top:35px}.portal-home-intro h1{font-size:clamp(2.05rem,8vw,3rem)}.portal-actions .button{width:100%}main>.section{padding:30px 0 54px}body.doctor-mode main>.section#cuenta .account-grid{display:block!important}.portal-heading h1{font-size:2.05rem}}
