@@ -277,3 +277,19 @@ select:focus-visible,
 }
 
 .account-grid{display:grid;grid-template-columns:1fr 1fr;gap:35px;align-items:center}.account-buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.button.outline{background:transparent;color:var(--navy)}.appointments-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:17px;margin-top:20px}.saved-appointment{padding:20px;border:2px solid var(--navy);border-radius:var(--radius);background:var(--ice)}.saved-appointment h3{margin-bottom:10px}.saved-appointment p{margin:4px 0}.saved-appointment button{margin-top:15px}#auth-feedback{margin-top:12px;font-weight:700;overflow-wrap:anywhere}@media(max-width:900px){.account-grid{grid-template-columns:1fr}}@media(max-width:560px){.account-buttons{flex-direction:column}.account-buttons button{width:100%}}
+
+
+/* Módulo de citas — médico único */
+.doctor-panel{background:#e9f4f5}
+.doctor-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:14px;margin:25px 0}
+.doctor-stat{background:#fff;border:1px solid #cee1e4;border-radius:16px;padding:20px;display:flex;flex-direction:column;box-shadow:0 6px 24px rgba(11,59,96,.05)}
+.doctor-stat strong{font-size:2rem;line-height:1.3}
+.doctor-stat span{font-size:.85rem;font-weight:700}
+.doctor-filters{display:flex;flex-wrap:wrap;align-items:end;gap:14px;margin-bottom:18px}
+.doctor-filters label{display:flex;flex-direction:column;gap:5px;flex:1 1 200px;font-weight:700}
+.doctor-filters input,.doctor-filters select,.reschedule-form input,.reschedule-form select{min-height:46px;border:1px solid #a8c4cf;border-radius:10px;padding:10px;color:var(--navy);background:white;max-width:100%}
+.doctor-panel .saved-appointment,.appointments-grid .saved-appointment{min-width:0;overflow-wrap:anywhere}
+.saved-appointment .button{margin:8px 8px 2px 0;font-size:.82rem}
+.reschedule-form{margin:14px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.reschedule-form .button{margin:0}
+@media(max-width:600px){.doctor-filters{display:grid;grid-template-columns:1fr}.reschedule-form{flex-direction:column;align-items:stretch}.reschedule-form>*{width:100%}}
