@@ -96,3 +96,7 @@ body.doctor-mode .main-nav a:not(.doctor-link){display:none!important}
 @media(max-width:1000px){.portal-home-hero{grid-template-columns:1fr}.portal-home-side{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:start}.portal-home-side .side-label{grid-column:1/-1;margin:0}.portal-home-side>a+a{border-top:0}.portal-home-side>a{padding:14px}}
 @media(max-width:900px){body.doctor-mode .main-nav a[data-role="doctor"]{display:flex!important}.portal-home-side{grid-template-columns:1fr}.portal-home-side>a+a{border-top:1px solid #edf2f5}}
 @media(max-width:700px){.portal-heading{padding:33px 0}.portal-home{padding:24px 0 50px}.portal-home-intro{padding:38px 25px}.portal-home-side{padding:22px}.portal-compact{padding-top:35px}.portal-home-intro h1{font-size:clamp(2.05rem,8vw,3rem)}.portal-actions .button{width:100%}main>.section{padding:30px 0 54px}body.doctor-mode main>.section#cuenta .account-grid{display:block!important}.portal-heading h1{font-size:2.05rem}}
+
+/* Sustituye la antigua regla de página única que ocultaba cualquier sección fuera del dashboard. */
+body.doctor-mode main > :not(#panel-medico):not(#avisos-citas):not(#cuenta){display:block!important}
+body.doctor-mode main > :not(#panel-medico):not(#avisos-citas):not(#cuenta)[hidden]{display:none!important}
