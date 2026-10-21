@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gestión de citas y videoconsultas MediCore.">
+<meta name="theme-color" content="#12304A">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MediCore">
+<link rel="icon" href="./assets/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./clinic.css"><link rel="stylesheet" href="./portal.css">
+<title>Mi cuenta | MediCore</title>
+</head>
+<body data-page="cuenta" class="role-pending">
+<header class="site-header"><div class="container header-inner">
+<a class="brand" href="./index.html" aria-label="MediCore, inicio"><span class="brand-logo" aria-hidden="true">MC</span><span class="brand-text"><strong>MediCore</strong><small>Portal de citas</small></span></a>
+<button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
+<nav class="main-nav" id="main-nav" aria-label="Menú principal"><a href="./index.html" data-role="patient">Inicio</a>
+<a href="./agendar.html" data-role="patient">Agendar cita</a>
+<a href="./citas.html" data-role="patient">Mis citas</a>
+<a href="./avisos.html" data-role="patient">Avisos</a>
+<a href="./informacion.html" data-role="patient">Información</a>
+<a href="./cuenta.html" data-role="patient" aria-current="page">Mi cuenta</a>
+<a href="./medico.html" data-role="doctor" class="doctor-link" hidden>Panel médico</a>
+<a href="./avisos.html" data-role="doctor" class="doctor-link" hidden>Avisos</a>
+<a href="./cuenta.html" data-role="doctor" class="doctor-link" hidden aria-current="page">Mi cuenta</a></nav>
+</div></header>
+<div id="role-loading" class="role-loading" aria-live="polite">Preparando tu espacio de trabajo…</div>
+<main><section class="portal-heading"><div class="container"><span class="eyebrow">ACCESO SEGURO</span><h1>Mi cuenta</h1><p>Inicia sesión para administrar las citas y las notificaciones de tu dispositivo.</p></div></section><section class="section account-section" id="cuenta"><div class="container account-grid"><div><span class="eyebrow">Mi cuenta</span><h2>Accede a tu espacio de citas</h2><p>Inicia sesión para agendar consultas, revisar tus solicitudes y recibir avisos.</p><p>Tus solicitudes son privadas. El registro de una solicitud no confirma la disponibilidad de la consulta.</p></div><div class="booking-form"><form id="auth-form"><h3>Acceso a MediCore</h3><label for="auth-email">Correo electrónico</label><input id="auth-email" type="email" autocomplete="email" required><label for="auth-password">Contraseña</label><input id="auth-password" type="password" minlength="8" required autocomplete="current-password"><div class="account-buttons"><button class="button primary" type="submit">Iniciar sesión</button><button class="button outline" id="register-button" type="button">Registrarme</button></div></form><div id="signed-in" hidden><p id="signed-email"></p><button class="button outline" id="logout-button" type="button">Cerrar sesión</button></div><p id="auth-feedback" role="status" aria-live="polite"></p></div></div></section><section class="install-section">
+            <div class="container install-panel">
+                <div class="install-copy">
+                    <span class="eyebrow">MediCore en tus dispositivos</span>
+                    <h2>Una experiencia web que puede instalarse.</h2>
+                    <p>
+                        Instala MediCore en tu dispositivo y activa avisos para recibir
+                        notificaciones incluso cuando no tengas abierta la página.
+                        La interfaz básica se conserva después de la primera visita.
+                    </p>
+                </div>
+                <div class="install-actions">
+                    <button class="button primary install-button" id="install-button-bottom" type="button" hidden>
+                        Instalar aplicación
+                    </button>
+                    <button class="button secondary" id="notification-button" type="button">
+                        Activar notificaciones
+                    </button>
+                    <p class="notification-help" id="notification-help" aria-live="polite">
+                        Activa las notificaciones desde un navegador compatible.
+                    </p>
+                </div>
+            </div>
+        </section></main>
+<footer class="site-footer"><div class="container footer-inner"><div class="footer-brand"><span class="brand-logo" aria-hidden="true">MC</span><div><strong>MediCore</strong><span>Portal de citas y videoconsultas</span></div></div><p>Gestiona tus citas en un solo lugar.</p></div></footer>
+<div id="network-status" class="network-status" role="status" aria-live="polite"></div>
+<script src="./portal.js" defer></script>
+</body></html>
