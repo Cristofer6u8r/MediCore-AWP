@@ -2,6 +2,66 @@
 /* MediCore: agenda de un solo médico. Permisos comprobados por Supabase RLS. */
 const doctorPanel = document.getElementById("panel-medico");
 const doctorNav = document.getElementById("doctor-nav");
+const doctorNoticesNav = document.getElementById("doctor-notices-nav");
+const doctorAccountNav = document.getElementById("doctor-account-nav");
+const roleLoading = document.getElementById("role-loading");
+const brandLink = document.querySelector("a.brand");
+const brandTagline = document.querySelector(".brand-text small");
+const originalBrandTagline = brandTagline?.textContent || "Gestión clínica inteligente";
+
+function cleanBrowserAddress(removeHash = false) {
+    const target = new URL(window.location.href);
+    for (const key of Array.from(target.searchParams.keys())) {
+        if (/^(utm_[a-z0-9_]+|fbclid|gclid|msclkid)$/i.test(key)) {
+            target.searchParams.delete(key);
+        }
+    }
+    if (removeHash) target.hash = "";
+    const cleanPath = target.pathname + target.search + target.hash;
+    if (cleanPath !== location.pathname + location.search + location.hash) {
+        history.replaceState(history.state, "", cleanPath);
+    }
+}
+
+// Los anclajes aún desplazan la página; después ocultamos el fragmento de la barra.
+window.addEventListener("hashchange", () => {
+    window.requestAnimationFrame(() => cleanBrowserAddress(true));
+});
+window.addEventListener("load", () => {
+    const anchor = window.location.hash.slice(1);
+    if (anchor && !document.body.classList.contains("doctor-mode")) {
+        try {
+            document.getElementById(decodeURIComponent(anchor))?.scrollIntoView({block:"start"});
+        } catch { /* Un hash inválido no debe impedir cargar la página. */ }
+    }
+    cleanBrowserAddress(true);
+});
+
+function setRoleLoading(enabled) {
+    document.body.classList.toggle("role-checking", Boolean(enabled));
+    if (roleLoading) roleLoading.hidden = !enabled;
+}
+
+function showDoctorWorkspace(enabled) {
+    const wasDoctor = document.body.classList.contains("doctor-mode");
+    document.body.classList.toggle("doctor-mode", Boolean(enabled));
+    doctorPanel.hidden = !enabled;
+    for (const item of [doctorNav, doctorNoticesNav, doctorAccountNav]) {
+        if (item) item.hidden = !enabled;
+    }
+    if (brandLink) brandLink.href = enabled ? "#panel-medico" : "#inicio";
+    if (brandTagline) brandTagline.textContent = enabled
+        ? "Administración de citas" : originalBrandTagline;
+    document.title = enabled ? "MediCore | Panel médico" : "MediCore | Agenda médica inteligente";
+    if (enabled !== wasDoctor) {
+        cleanBrowserAddress(true);
+        window.scrollTo(0, 0);
+        mainNav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Abrir menú");
+    }
+}
+
 const doctorCards = document.getElementById("doctor-appointments");
 const doctorStats = document.getElementById("doctor-stats");
 const doctorFeedback = document.getElementById("doctor-feedback");
@@ -70,17 +130,42 @@ async function loadNotices(){
     }catch(e){noticesFeedback.textContent=e.message;}
 }
 async function syncDoctorUI(){
-    const tokenId=++doctorEpoch;
-    doctorActive=false;doctorPanel.hidden=true;doctorNav.hidden=true;
-    doctorCards.replaceChildren();doctorStats.replaceChildren();
-    if(!session?.access_token){loadNotices();return;}
-    try{
-        const enabled=await rpc("is_medicore_doctor",{});
-        if(tokenId!==doctorEpoch)return;
-        doctorActive=enabled===true;
-        doctorPanel.hidden=!doctorActive;doctorNav.hidden=!doctorActive;
-        await Promise.all([loadNotices(),doctorActive?loadDoctorAppointments():Promise.resolve()]);
-    }catch(e){if(tokenId===doctorEpoch){doctorFeedback.textContent="No se pudo comprobar el acceso médico.";loadNotices();}}
+    const requestId = ++doctorEpoch;
+    const signedIn = Boolean(session?.access_token);
+    if (!signedIn) {
+        doctorActive = false;
+        doctorAppointments = [];
+        doctorCards.replaceChildren();
+        doctorStats.replaceChildren();
+        showDoctorWorkspace(false);
+        setRoleLoading(false);
+        await loadNotices();
+        return;
+    }
+    if (!doctorActive) setRoleLoading(true);
+    try {
+        const enabled = await rpc("is_medicore_doctor", {});
+        if (requestId !== doctorEpoch) return;
+        doctorActive = enabled === true;
+        showDoctorWorkspace(doctorActive);
+        setRoleLoading(false);
+        if (!doctorActive) {
+            doctorCards.replaceChildren();
+            doctorStats.replaceChildren();
+            doctorAppointments = [];
+        }
+        await Promise.all([loadNotices(), doctorActive ? loadDoctorAppointments() : Promise.resolve()]);
+    } catch (error) {
+        if (requestId === doctorEpoch) {
+            doctorActive = false;
+            showDoctorWorkspace(false);
+            setRoleLoading(false);
+            doctorFeedback.textContent = "No se pudo comprobar el acceso médico. Intenta actualizar la página.";
+            await loadNotices();
+        }
+    } finally {
+        if (requestId === doctorEpoch) setRoleLoading(false);
+    }
 }
 function renderDoctorStats(){
     const now=today();
