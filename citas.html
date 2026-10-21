@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gestión de citas y videoconsultas MediCore.">
+<meta name="theme-color" content="#12304A">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MediCore">
+<link rel="icon" href="./assets/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./clinic.css"><link rel="stylesheet" href="./portal.css">
+<title>Mis citas | MediCore</title>
+</head>
+<body data-page="citas" class="role-pending">
+<header class="site-header"><div class="container header-inner">
+<a class="brand" href="./index.html" aria-label="MediCore, inicio"><span class="brand-logo" aria-hidden="true">MC</span><span class="brand-text"><strong>MediCore</strong><small>Portal de citas</small></span></a>
+<button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
+<nav class="main-nav" id="main-nav" aria-label="Menú principal"><a href="./index.html" data-role="patient">Inicio</a>
+<a href="./agendar.html" data-role="patient">Agendar cita</a>
+<a href="./citas.html" data-role="patient" aria-current="page">Mis citas</a>
+<a href="./avisos.html" data-role="patient">Avisos</a>
+<a href="./informacion.html" data-role="patient">Información</a>
+<a href="./cuenta.html" data-role="patient">Mi cuenta</a>
+<a href="./medico.html" data-role="doctor" class="doctor-link" hidden>Panel médico</a>
+<a href="./avisos.html" data-role="doctor" class="doctor-link" hidden>Avisos</a>
+<a href="./cuenta.html" data-role="doctor" class="doctor-link" hidden>Mi cuenta</a></nav>
+</div></header>
+<div id="role-loading" class="role-loading" aria-live="polite">Preparando tu espacio de trabajo…</div>
+<main><section class="portal-heading"><div class="container"><span class="eyebrow">MI AGENDA</span><h1>Mis citas</h1><p>Consulta los estados, horarios y accesos a videoconsulta de tus solicitudes.</p></div></section><section class="section" id="mis-citas"><div class="container"><span class="eyebrow">Tu historial</span><h2>Mis citas</h2><p class="section-lead">Revisa tus solicitudes, confirma cuándo te toca asistir y accede a tus consultas virtuales.</p><div id="patient-overview" class="patient-overview" aria-label="Resumen de tus citas"></div><p id="appointments-feedback" role="status" aria-live="polite">Inicia sesión para ver tus citas.</p><div class="appointments-grid" id="appointments-list"></div></div></section></main>
+<footer class="site-footer"><div class="container footer-inner"><div class="footer-brand"><span class="brand-logo" aria-hidden="true">MC</span><div><strong>MediCore</strong><span>Portal de citas y videoconsultas</span></div></div><p>Gestiona tus citas en un solo lugar.</p></div></footer>
+<div id="network-status" class="network-status" role="status" aria-live="polite"></div>
+<script src="./portal.js" defer></script>
+</body></html>
