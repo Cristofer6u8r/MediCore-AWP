@@ -1,11 +1,19 @@
-const CACHE_NAME = "medicore-pwa-v8";
+const CACHE_NAME = "medicore-pwa-v9";
 const APP_SHELL = [
     "./",
     "./index.html",
+    "./agendar.html",
+    "./citas.html",
+    "./avisos.html",
+    "./cuenta.html",
+    "./medico.html",
+    "./informacion.html",
     "./style.css",
     "./clinic.css",
     "./script.js",
     "./doctor.js",
+    "./portal.js",
+    "./portal.css",
     "./manifest.json",
     "./offline.html",
     "./assets/icon-192.png",
@@ -102,13 +110,14 @@ self.addEventListener("fetch", (event) => {
         event.respondWith(
             fetch(request).then((response) => {
                 const copy = response.clone();
-                event.waitUntil(
-                    caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy))
-                );
+                if (response.ok && response.type === "basic") {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then((cache) => cache.put(request, copy))
+                    );
+                }
                 return response;
             }).catch(async () => {
-                return await caches.match("./index.html")
-                    || await caches.match("./")
+                return await caches.match(request)
                     || await caches.match("./offline.html");
             })
         );
