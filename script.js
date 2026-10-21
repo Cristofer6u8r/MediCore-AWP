@@ -214,7 +214,7 @@ const authFeedback=document.getElementById("auth-feedback");
 const appointmentsFeedback=document.getElementById("appointments-feedback");
 const appointmentsList=document.getElementById("appointments-list");
 const saveButton=document.getElementById("save-appointment");
-function saveSession(s){session=s;if(s)localStorage.setItem(SESSION_KEY,JSON.stringify(s));else localStorage.removeItem(SESSION_KEY);renderAuth();}
+function saveSession(s){session=s;if(s)localStorage.setItem(SESSION_KEY,JSON.stringify(s));else localStorage.removeItem(SESSION_KEY);renderAuth();if(typeof syncDoctorUI==="function")syncDoctorUI();}
 function renderAuth(){const active=Boolean(session?.access_token&&session?.user);authForm.hidden=active;document.getElementById("signed-in").hidden=!active;document.getElementById("signed-email").textContent=active?session.user.email:"";saveButton.disabled=!active;saveButton.textContent=active?"Guardar solicitud":"Inicia sesión para guardar";if(!active){appointmentsList.replaceChildren();appointmentsFeedback.textContent="Inicia sesión para ver tus citas.";}}
 async function authCall(path,body){const r=await fetch(SB_URL+"/auth/v1/"+path,{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.msg||data.error_description||data.message||"Error de autenticación");return data;}
 async function accessToken(){if(!session)throw Error("Inicia sesión primero");if(!session.expires_at||Date.now()/1000>session.expires_at-60){const fresh=await authCall("token?grant_type=refresh_token",{refresh_token:session.refresh_token});saveSession(fresh);}return session.access_token;}
