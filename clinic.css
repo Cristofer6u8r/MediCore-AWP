@@ -1,0 +1,284 @@
+/* MediCore Clinical UI · Vista de citas y administración, sin dependencias externas */
+:root {
+    --navy:#14314a;
+    --teal:#168b85;
+    --ice:#f6f8fc;
+    --max-width:1180px;
+    --radius:18px;
+    --shadow:0 20px 58px rgba(24,53,80,.08);
+    --clinic-ink:#18324b;
+    --clinic-muted:#62778a;
+    --clinic-line:#e3ebf1;
+    --clinic-blue:#27659f;
+    --clinic-dark:#102940;
+    --clinic-surface:#fff;
+}
+html { scroll-behavior:smooth;scroll-padding-top:92px; }
+body {background:#f6f9fc;color:var(--clinic-ink);font-family:"Segoe UI",Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.57;font-size:15px}
+::selection { background:#c9f1e9;color:#12314b }
+h1,h2,h3 { letter-spacing:-.027em }
+h2 {font-size:clamp(1.85rem,3.4vw,2.7rem);line-height:1.16;color:var(--clinic-ink)}
+h3 {line-height:1.28}
+p {color:inherit}
+button, input,select {font-family:inherit}
+a,button,input,select { -webkit-tap-highlight-color: transparent }
+:where(a,button,input,select):focus-visible {outline:3px solid #31b1ac!important;outline-offset:3px}
+.container {width:min(92%,var(--max-width))}
+[hidden] {display:none!important}
+.eyebrow {color:var(--teal);font-size:.73rem;letter-spacing:.13em;font-weight:850;margin-bottom:15px}
+.section {padding:78px 0}
+
+/* Encabezado: estilo portal hospitalario */
+.site-header {background:rgba(255,255,255,.97);border-bottom:1px solid var(--clinic-line);box-shadow:0 7px 25px rgba(23,51,73,.035);backdrop-filter:blur(14px)}
+.header-inner {min-height:79px;gap:18px}
+.brand {color:var(--clinic-ink);gap:12px}
+.brand-logo {width:46px;height:46px;min-width:46px;border-radius:14px;background:linear-gradient(140deg,#167f91,#168c7d);box-shadow:0 8px 18px rgba(22,139,133,.17);color:#fff;font-weight:900;letter-spacing:-.06em}
+.brand-text strong {font-size:1.15rem;font-weight:850;letter-spacing:-.04em}
+.brand-text small {color:var(--clinic-muted);font-weight:600;font-size:.66rem;letter-spacing:.005em}
+.main-nav {gap:3px}
+.main-nav a {color:#51667b;font-size:.84rem;font-weight:700;padding:12px 13px;border-radius:10px;transition:background .18s,color .18s}
+.main-nav a:hover,.main-nav a:focus-visible {color:var(--teal);background:#eaf7f4}
+.main-nav a.nav-primary-link {background:#e7f6f3;color:#08776f}
+.main-nav a.nav-primary-link:hover {background:#d6f0ea}
+.menu-toggle {background:#e9f3f6;border:1px solid #d6e8e9}
+.menu-toggle span {background:var(--navy)}
+
+/* Acciones y controles */
+.button {border:1px solid transparent;border-radius:11px;font-size:.9rem;font-weight:750;letter-spacing:-.01em;min-height:47px;box-shadow:none;gap:9px;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s}
+.button:hover {transform:translateY(-1px)}
+.button.primary {background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 9px 23px rgba(22,139,133,.17)}
+.button.primary:hover {background:#08756e;border-color:#08756e;box-shadow:0 13px 27px rgba(22,139,133,.21)}
+.button.outline {background:#fff;color:#256083;border-color:#ccdae6}
+.button.outline:hover {background:#f0f7fa;border-color:#9fc7d0}
+.button.secondary {border-color:#adc9d8;color:var(--clinic-ink);background:#fff}
+.button.secondary:hover {background:#f5fafb}
+button:disabled {opacity:.6;cursor:not-allowed;transform:none!important}
+.button:active {transform:translateY(0)}
+
+/* Portada de paciente */
+.hero {position:relative;padding:72px 0 72px;overflow:hidden;color:var(--clinic-ink);background:linear-gradient(116deg,#f4fafb 0%,#eef5fa 45%,#dfeff2 100%)}
+.hero::after {content:"";position:absolute;pointer-events:none;right:-160px;top:-230px;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,#ccebe3aa 0%,transparent 69%)}
+.hero-grid {position:relative;z-index:1;grid-template-columns:1.12fr .88fr;gap:75px}
+.hero-kicker {display:inline-flex;align-items:center;gap:9px;border:1px solid #d0e6e4;border-radius:999px;padding:8px 13px;background:#ffffffba;color:#107c75;margin-bottom:24px;letter-spacing:.08em}
+.kicker-dot {width:7px;height:7px;border-radius:50%;background:#2cab8e;box-shadow:0 0 0 4px #d8f2eb}
+.hero h1 {font-size:clamp(2.95rem,5.8vw,5.05rem);line-height:1.06;letter-spacing:-.065em;max-width:650px;margin-bottom:20px;font-weight:850;color:#14334b}
+.hero h1 span {color:var(--teal)}
+.hero-copy>p:not(.install-hint) {font-size:1.06rem;color:#526e81;line-height:1.7;max-width:550px}
+.hero-actions {margin-top:28px;gap:10px}
+.hero-actions .button.primary {min-height:51px;padding:12px 20px}
+.hero-actions .button.secondary {color:#27506b;border-color:#c4d9e3;background:#ffffffc9}
+.hero .install-hint {margin-top:15px;color:#7890a2;font-size:.81rem}
+.hero-points {display:flex;flex-wrap:wrap;gap:18px;margin-top:34px}
+.hero-points span {font-size:.81rem;color:#4f6c7e;font-weight:650;gap:7px}
+.hero-points b {color:#0e947e;font-size:.88rem}
+.hero-visual {border:1px solid #ddebed;border-radius:24px;background:#fff;box-shadow:0 29px 75px rgba(26,78,95,.13);padding:21px;transform:rotate(1deg);max-width:450px;justify-self:end;width:100%}
+.visual-heading {color:#47677a;font-size:.7rem;letter-spacing:.08em;margin-bottom:16px}
+.visual-dot {width:9px;height:9px;background:#30b79a}
+.visual-tag {background:#eaf7f4;color:#158278;border:1px solid #d6eee8;padding:5px 10px}
+.appointment-card {border:1px solid #e3eaf0;border-radius:17px;padding:23px;background:linear-gradient(170deg,#fff,#fbfdff)}
+.appointment-top {border-bottom:1px solid #e8eef2;padding-bottom:17px}
+.appointment-top h2 {font-size:1.3rem;color:#183952;font-weight:820}
+.small-label {color:#8296a4;font-size:.67rem;letter-spacing:.09em}
+.doctor-avatar {border-radius:13px;width:47px;height:47px;background:#e5f5f0;color:#149081;font-size:1.7rem}
+.appointment-line {border-bottom:1px solid #eef2f5;padding:13px 0;gap:12px}
+.line-icon {background:#eef5f7;color:#267b93;border-radius:11px;width:39px;height:39px;font-size:1rem}
+.appointment-line small {color:#8a9ba7;margin-bottom:2px}
+.appointment-line strong {color:#37556a;font-size:.83rem}
+.confirmed-label {font-size:.81rem;color:#137d72}
+.confirmed-label span {background:#d6f3e9;color:#168a7c}
+.visual-caption {color:#8da0ad;font-size:.73rem;line-height:1.5}
+.care-strip {background:#fff;border-top:1px solid #e3eaee;border-bottom:1px solid #e8eef2}
+.care-strip-inner {display:grid;grid-template-columns:repeat(3,1fr);gap:15px;align-items:center;padding:20px 0}
+.care-strip-inner span {font-size:.83rem;color:#547083;font-weight:680;text-align:center}
+.care-strip-inner span+span {border-left:1px solid #e1ebef}
+.care-strip-inner strong {color:var(--teal);font-size:.8rem;margin-right:9px;letter-spacing:.04em}
+
+/* Pasos */
+#agenda {background:#fff}
+.section-heading {max-width:740px;margin-bottom:31px}
+.section-heading p,.section-lead {color:var(--clinic-muted);line-height:1.75;max-width:710px}
+.steps {gap:17px}
+.step-card {border:1px solid var(--clinic-line);border-radius:17px;padding:30px 28px;background:#fdfefe;box-shadow:0 9px 27px rgba(24,53,80,.035);position:relative}
+.step-number {margin-bottom:25px;border:1px solid #d8ecec;background:#edfaf6;border-radius:12px;padding:10px;color:var(--teal);font-size:.82rem}
+.step-card h3 {font-size:1.2rem;color:var(--clinic-ink);margin-bottom:9px}
+.step-card p {color:var(--clinic-muted);line-height:1.7;font-size:.89rem}
+
+/* Cuenta y solicitudes */
+.account-section {background:#f3f7fa}
+.account-grid {gap:58px;align-items:center}
+.account-grid>div:first-child p {color:#627a8d;line-height:1.7;margin:9px 0}
+.account-grid>div:first-child p:last-child {font-size:.83rem;border-left:3px solid var(--teal);padding-left:15px;margin-top:20px}
+.booking-form {background:#fff;border:1px solid #e0e9ef;border-radius:19px;padding:30px 32px;box-shadow:0 15px 40px rgba(25,58,83,.065)}
+.booking-form h3 {font-size:1.25rem;color:#1c3b53;font-weight:810}
+.booking-form label {color:#39576c;font-size:.8rem;margin:19px 0 8px}
+.booking-form input,.booking-form select {min-height:48px;color:#243e55;background:#f8fafc;border:1px solid #d7e3ea;border-radius:10px;padding:11px 13px}
+.booking-form input:hover,.booking-form select:hover {border-color:#a9c6ce}
+.booking-form input:focus,.booking-form select:focus {background:#fff;border-color:var(--teal);outline:3px solid #d5f3ec;outline-offset:0}
+.account-buttons {margin-top:8px;gap:9px}
+.account-buttons button {flex:1;min-width:140px}
+#signed-in {background:#f0f9f6;border:1px solid #d4eee5;padding:16px;border-radius:13px}
+#signed-email {font-weight:750;overflow-wrap:anywhere;color:#244a52}
+#auth-feedback {font-size:.85rem;color:#35617b}
+.booking-section {background:linear-gradient(135deg,#eaf4f7 0%,#f6fafc 100%);color:var(--clinic-ink);border-block:1px solid #e5edef}
+.booking-grid {grid-template-columns:.88fr 1.12fr;gap:66px;align-items:start}
+.booking-copy {padding-top:20px}
+.booking-copy>p {color:var(--clinic-muted);line-height:1.78}
+.booking-section .eyebrow {color:#19847d}
+.innovation-box {margin-top:30px;background:#fff;color:#466479;border:1px solid #dae7ee;padding:20px 22px;box-shadow:0 12px 26px rgba(24,53,80,.045)}
+.innovation-symbol {color:#168c85}
+.innovation-box strong {color:var(--clinic-ink)}
+.innovation-box p {color:var(--clinic-muted);font-size:.86rem}
+#booking-form {padding:35px;box-shadow:0 20px 50px rgba(20,56,83,.1)}
+#booking-form:before {content:"DATOS DE TU CITA";display:block;color:#168d81;font-size:.7rem;font-weight:850;letter-spacing:.12em;margin-bottom:10px}
+#booking-form h3 {margin-bottom:23px}
+#booking-form .full-width {margin-top:27px}
+.form-message {line-height:1.55;font-size:.86rem}
+.form-message:not(:empty) {background:#ecf8f5;border-left:3px solid #27a992;border-radius:8px}
+
+/* Agenda de pacientes y avisos */
+#mis-citas {background:#fff}
+#avisos-citas {background:#f5f9fc;border-block:1px solid #e6edf1}
+#mis-citas .eyebrow,#avisos-citas .eyebrow {margin-bottom:8px}
+#mis-citas h2,#avisos-citas h2 {margin-bottom:13px}
+#appointments-feedback,#notices-feedback,#doctor-feedback {font-size:.87rem;color:#587287;padding:12px 15px;background:#edf4f9;border-radius:10px;border:1px solid #e1ecf3;margin-top:22px}
+.patient-overview {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:26px}
+.patient-overview:empty {display:none}
+.overview-tile {background:#f8fafc;border:1px solid #e1eaf0;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:4px}
+.overview-tile strong {font-size:1.95rem;color:#203d55;line-height:1.15;letter-spacing:-.05em}
+.overview-tile span {color:#678094;font-size:.82rem;font-weight:700}
+.appointments-grid {gap:17px;margin-top:25px;grid-template-columns:repeat(auto-fit,minmax(min(100%,315px),1fr))}
+.saved-appointment {border:1px solid #dde8ee;border-radius:17px;background:#fff;padding:23px;box-shadow:0 9px 30px rgba(26,59,87,.055);transition:box-shadow .18s, transform .18s}
+.saved-appointment:hover {box-shadow:0 15px 37px rgba(26,59,87,.085);transform:translateY(-1px)}
+.saved-appointment h3 {font-size:1.1rem;color:#1d3b54;margin-bottom:14px}
+.saved-appointment p {margin:8px 0;color:#5f7888;font-size:.88rem;line-height:1.5}
+.saved-appointment small {color:#8596a3}
+.appointment-status {display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:800;border-radius:999px;padding:6px 11px;letter-spacing:.01em;white-space:nowrap}
+.appointment-status::before {content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.appointment-status.requested {color:#93630c;background:#fff5d8}
+.appointment-status.confirmed {color:#147c68;background:#e2f7ef}
+.appointment-status.cancelled {color:#9b4450;background:#fcebef}
+.appointment-card-header {display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:17px}
+.appointment-card-header h3 {margin:0}
+.appointment-detail {display:flex;align-items:center;gap:8px;font-size:.85rem;color:#607789;margin:10px 0}
+.appointment-detail .detail-symbol {display:grid;place-items:center;flex:0 0 auto;width:27px;height:27px;border-radius:8px;background:#edf5f7;color:#236c86;font-size:.8rem}
+.saved-appointment .button {font-size:.78rem;min-height:41px;margin:13px 8px 0 0;padding:9px 12px}
+.appointment-help {display:block;margin-top:9px;color:#698193;font-size:.76rem;line-height:1.6}
+.appointment-help.doctor-help {background:#eaf8f3;color:#246e61;border:1px solid #d3ede4;border-radius:9px;padding:9px 11px}
+.appointment-help.patient-help {background:#f4f8fb;border-radius:9px;padding:9px 11px}
+#notices-list .saved-appointment {border-left:3px solid #269c97}
+#notices-list .saved-appointment h3 {font-size:.95rem}
+
+/* Panel médico */
+body.doctor-mode {background:#f5f8fb}
+body.doctor-mode .brand-text small {color:#7f9baa}
+body.doctor-mode .main-nav a.doctor-link {font-weight:760}
+body.doctor-mode .main-nav a#doctor-nav {color:#0c7970;background:#e9f6f2}
+body.doctor-mode #panel-medico {padding:50px 0 70px;min-height:62vh;background:transparent}
+#panel-medico > .container > .eyebrow {margin-bottom:8px}
+#panel-medico h2 {margin-bottom:11px}
+#panel-medico>.container>p {font-size:.95rem;max-width:650px;color:var(--clinic-muted)}
+.doctor-intro-note {display:flex;align-items:center;gap:12px;margin:22px 0 4px;color:#4c7183;background:#fff;border:1px solid #dfebef;border-radius:12px;padding:12px 15px;font-size:.82rem;font-weight:650;max-width:690px}
+.doctor-intro-icon {display:grid;place-items:center;background:#e5f7f1;color:#0f8c77;width:33px;height:33px;border-radius:10px;font-size:1.1rem}
+.doctor-stats {grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:28px 0}
+.doctor-stat {border:1px solid #e0e9f0;border-radius:16px;padding:24px 18px;background:#fff;box-shadow:0 9px 28px rgba(24,53,80,.045);position:relative;overflow:hidden}
+.doctor-stat::before {content:"";position:absolute;height:4px;inset:0 0 auto;background:#8cbecb}
+.doctor-stat:nth-child(3)::before {background:#e2b357}
+.doctor-stat:nth-child(4)::before {background:#2ab18f}
+.doctor-stat:nth-child(5)::before {background:#e29291}
+.doctor-stat strong {color:#18364e;font-size:2.08rem;letter-spacing:-.065em}
+.doctor-stat span {font-size:.78rem;color:#75899a;letter-spacing:.01em}
+.doctor-filters {background:#fff;border:1px solid #e1e9f0;padding:19px 21px;border-radius:16px;gap:14px;margin-bottom:22px;align-items:end;box-shadow:0 7px 24px rgba(24,53,80,.035)}
+.doctor-filters label {font-size:.79rem;color:#4d687b;font-weight:780;gap:7px}
+.doctor-filters input,.doctor-filters select,.reschedule-form input,.reschedule-form select {border:1px solid #d5e2e9;border-radius:10px;background:#f9fbfd;color:#24465a;min-height:44px}
+.doctor-filters .button {min-width:153px}
+.doctor-panel .saved-appointment {min-width:0}
+.doctor-panel .saved-appointment h3 {font-size:1.09rem}
+.doctor-panel .saved-appointment p {font-size:.84rem}
+.doctor-panel .saved-appointment .appointment-status {margin-bottom:9px}
+.reschedule-form {padding-top:15px;border-top:1px solid #edf1f4;margin-top:18px}
+.reschedule-form input,.reschedule-form select {min-width:0}
+body.doctor-mode #avisos-citas {padding:56px 0;background:#f0f6f9}
+body.doctor-mode #cuenta {background:#f6f9fb;border-top:1px solid #e6edf2}
+body.doctor-mode #cuenta .account-grid {max-width:720px}
+body.doctor-mode #cuenta .booking-form {box-shadow:0 10px 30px rgba(24,53,80,.04)}
+body.doctor-mode #signed-in::before {color:var(--clinic-ink)}
+
+/* Secundarios: presentes pero sin competir con las citas */
+.media-section {background:#fff}
+.media-grid {gap:55px}
+.media-section p {color:var(--clinic-muted)}
+.media-card {border-radius:19px;background:#14314a;border:1px solid #cce2e7;box-shadow:0 16px 45px rgba(24,53,80,.09)}
+.media-credit strong {color:#b4eee3}
+.media-credit p,.media-credit a {color:#e1f3fa}
+.feature-list li {border-bottom:1px solid #e3edf0;display:flex;flex-direction:column;gap:4px}
+.feature-list span {color:var(--clinic-muted)}
+.context-section {background:#f4f8fa}
+.context-grid,.catalog-grid {gap:40px}
+.context-grid p {color:var(--clinic-muted)}
+.context-card {background:#fff;border:1px solid #e0eaf0;box-shadow:0 12px 28px rgba(24,53,80,.04)}
+.context-icon {background:#dcf2eb;color:#19867b}
+.catalog-section {background:#e9f2f4;color:#25485b}
+.catalog-section .eyebrow {color:var(--teal)}
+.catalog-grid p {border-left-color:#9cc8cc;color:#617d8d}
+.install-section {background:#fff}
+.install-panel {border:1px solid #dce7ee;border-radius:19px;background:linear-gradient(135deg,#f2f8fa,#e8f5f2);padding:33px;box-shadow:0 12px 32px rgba(24,53,80,.04)}
+.install-panel p {color:#627a8d}
+.install-panel .button.secondary {color:#1d5e71;background:#fff;border:1px solid #b9d9dc}
+.notification-help {color:#617d8c}
+.site-footer {background:#102c43;border-top:0;padding:34px 0}
+.site-footer .brand-logo {background:#177f88;color:#fff}
+.site-footer p,.footer-brand span {color:#c5d9e2}
+.network-status {box-shadow:0 8px 24px #17394b28;border:1px solid #527385}
+.role-loading {color:#1b4962}
+
+/* Tablet */
+@media(max-width:1050px) {
+    .hero-grid {gap:35px}
+    .hero h1 {font-size:clamp(2.8rem,5.6vw,4.1rem)}
+    .doctor-stats {grid-template-columns:repeat(3,minmax(0,1fr))}
+    .main-nav a {padding:11px 8px;font-size:.78rem}
+}
+@media(max-width:900px) {
+    .menu-toggle {display:block}
+    .main-nav {position:absolute;display:none;top:78px;left:0;right:0;background:#fff;border:1px solid #e2eaf0;box-shadow:0 25px 35px #173b5221;padding:10px 4% 17px;flex-direction:column;gap:3px;border-radius:0 0 15px 15px}
+    .main-nav.open {display:flex}
+    .main-nav a {color:#38536c;padding:13px 14px;border-bottom:0;border-radius:8px;font-size:.91rem}
+    .main-nav a:hover {color:#16877f;background:#eaf6f3}
+    .hero-grid,.booking-grid,.media-grid,.context-grid,.catalog-grid {grid-template-columns:1fr}
+    .hero-grid {gap:36px}
+    .hero-visual {max-width:480px;justify-self:start;transform:none}
+    .booking-copy {padding-top:0}
+    .doctor-stats {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:680px) {
+    .section {padding:56px 0}
+    .hero {padding:45px 0 48px}
+    .hero h1 {font-size:clamp(2.65rem,10.7vw,3.8rem)}
+    .hero-kicker {font-size:.65rem;letter-spacing:.04em}
+    .hero-points {gap:13px}
+    .hero-visual {padding:14px}
+    .care-strip-inner {grid-template-columns:1fr;gap:8px;padding:17px 0}
+    .care-strip-inner span {text-align:left;display:block}
+    .care-strip-inner span+span {border-left:0}
+    .steps,.patient-overview {grid-template-columns:1fr}
+    .doctor-stats {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .doctor-stat {padding:17px 15px}
+    .doctor-stat strong {font-size:1.75rem}
+    .doctor-filters {padding:15px}
+    .doctor-filters .button {width:100%}
+    #booking-form {padding:24px}
+    .booking-form {padding:23px}
+    .appointment-card-header {align-items:flex-start}
+    .saved-appointment {padding:20px}
+    .install-panel {padding:23px}
+}
+@media(max-width:380px) {
+    .doctor-stats {grid-template-columns:1fr 1fr}
+    .hero-actions .button {width:100%}
+    .hero h1 {font-size:2.4rem}
+    .brand-text strong {font-size:1rem}
+}
+@media(prefers-reduced-motion:reduce) {
+    html {scroll-behavior:auto}
+    .button,.saved-appointment {transition:none!important}
+}
