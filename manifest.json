@@ -2,14 +2,14 @@
   "id": "./",
   "name": "MediCore | Gestión Clínica Inteligente",
   "short_name": "MediCore",
-  "description": "Aplicación web progresiva para organizar citas médicas y acceder a funciones de gestión clínica.",
+  "description": "Portal de citas y videoconsultas con atención diferenciada para pacientes y médico.",
   "lang": "es-MX",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#F4F8FB",
-  "theme_color": "#0B3B60",
+  "background_color": "#F6F9FC",
+  "theme_color": "#12304A",
   "icons": [
     {
       "src": "./assets/icon-192.png",
