@@ -108,6 +108,56 @@ function setNotificationMessage(message) {
     if (notificationHelp) notificationHelp.textContent = message;
 }
 
+async function registerDevicePush(subscription, token) {
+    const response = await fetch("./api/push/subscribe", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(subscription)
+    });
+    if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || "No se pudo vincular el dispositivo a tu cuenta.");
+    }
+}
+
+async function syncExistingPushSubscription() {
+    if (!session?.access_token || !("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    try {
+        const token = await accessToken();
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!subscription || Notification.permission !== "granted") return;
+        await registerDevicePush(subscription, token);
+        setNotificationMessage("Este dispositivo recibirá avisos automáticos sobre tus citas.");
+    } catch (error) {
+        console.warn("No se pudo vincular la suscripción existente:", error.message);
+    }
+}
+
+async function unlinkDevicePush(oldSession) {
+    if (!oldSession?.access_token || !("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!subscription) return;
+        // Revocar el navegador evita que otra persona siga recibiendo avisos después de cerrar sesión.
+        await subscription.unsubscribe();
+        await fetch("./api/push/subscribe", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + oldSession.access_token
+            },
+            body: JSON.stringify({ endpoint: subscription.endpoint })
+        });
+    } catch (error) {
+        console.warn("No se pudo limpiar la suscripción al cerrar sesión:", error.message);
+    }
+}
+
 async function loadPushConfiguration() {
     if (!notificationButton) return;
     if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
@@ -115,18 +165,15 @@ async function loadPushConfiguration() {
         setNotificationMessage("Este navegador no admite notificaciones push. Prueba con una versión reciente de Chrome, Edge o Firefox.");
         return;
     }
-
     try {
         const response = await fetch("./api/config", { cache: "no-store" });
         if (!response.ok) throw new Error("No se pudo leer la configuración de notificaciones.");
         const config = await response.json();
-
         if (!config.pushEnabled || !config.vapidPublicKey) {
             notificationButton.disabled = true;
             setNotificationMessage("El servicio de notificaciones todavía no está configurado en el servidor.");
             return;
         }
-
         pushConfiguration = config;
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
@@ -134,75 +181,81 @@ async function loadPushConfiguration() {
             ? "Enviar notificación de prueba"
             : "Activar notificaciones";
         notificationButton.disabled = false;
-
         if (Notification.permission === "denied") {
-            setNotificationMessage("Las notificaciones están bloqueadas en el navegador. Permítelas en la configuración del sitio para activarlas.");
+            setNotificationMessage("Las notificaciones están bloqueadas. Permítelas en la configuración del sitio.");
+        } else if (!session?.access_token) {
+            setNotificationMessage("Inicia sesión para recibir avisos automáticos de tus citas.");
         } else if (subscription) {
-            setNotificationMessage("Este dispositivo ya está suscrito a las notificaciones de MediCore.");
+            setNotificationMessage("Las notificaciones están disponibles. Se vincularán a tu cuenta.");
         } else {
-            setNotificationMessage("Actívalas para recibir avisos de MediCore en este dispositivo.");
+            setNotificationMessage("Actívalas para recibir avisos de confirmaciones y cambios de citas.");
         }
     } catch (error) {
         notificationButton.disabled = true;
         setNotificationMessage("No se pudo comprobar el servicio push. Conéctate a internet y vuelve a intentarlo.");
-        console.error("Error al cargar la configuración push:", error);
+        console.error("Error al cargar las notificaciones:", error);
     }
 }
 
 if (notificationButton) {
     notificationButton.addEventListener("click", async () => {
+        if (!session?.access_token) {
+            setNotificationMessage("Primero inicia sesión en MediCore para activar los avisos de tus citas.");
+            return;
+        }
+        if (!pushConfiguration) {
+            setNotificationMessage("Espera a que termine de cargar el servicio de notificaciones.");
+            return;
+        }
         notificationButton.disabled = true;
         try {
-            if (!pushConfiguration) await loadPushConfiguration();
-            if (!pushConfiguration) return;
-
-            const registration = await navigator.serviceWorker.ready;
-            let subscription = await registration.pushManager.getSubscription();
-
-            if (!subscription) {
+            // El permiso del navegador debe solicitarse desde un clic real del usuario.
+            let subscription;
+            if (Notification.permission !== "granted") {
                 const permission = await Notification.requestPermission();
                 if (permission !== "granted") {
                     setNotificationMessage("No se concedió permiso para mostrar notificaciones.");
                     return;
                 }
-
+            }
+            const registration = await navigator.serviceWorker.ready;
+            subscription = await registration.pushManager.getSubscription();
+            if (!subscription) {
                 subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: base64UrlToBytes(pushConfiguration.vapidPublicKey)
                 });
-
-                const saveResponse = await fetch("./api/push/subscribe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(subscription)
-                });
-                if (!saveResponse.ok) {
-                    throw new Error("No se pudo guardar la suscripción de este dispositivo.");
-                }
             }
-
-            const testResponse = await fetch("./api/push/test", {
+            const token = await accessToken();
+            await registerDevicePush(subscription, token);
+            const response = await fetch("./api/push/test", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
                 body: JSON.stringify({ endpoint: subscription.endpoint })
             });
-            const result = await testResponse.json();
-            if (!testResponse.ok) {
-                throw new Error(result.error || "No se pudo enviar la notificación de prueba.");
-            }
-
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.error || "No se pudo enviar la prueba.");
             notificationButton.textContent = "Enviar notificación de prueba";
-            setNotificationMessage("Suscripción activa. Se envió una notificación push de prueba a este dispositivo.");
+            setNotificationMessage("¡Listo! Recibirás avisos automáticos de las citas de tu cuenta en este dispositivo.");
         } catch (error) {
-            setNotificationMessage(error.message || "No se pudo activar la notificación. Comprueba tu conexión y vuelve a intentarlo.");
-            console.error("Error al activar las notificaciones push:", error);
+            setNotificationMessage(error.message || "No se pudieron activar las notificaciones.");
+            console.error("Error al activar push:", error);
         } finally {
             notificationButton.disabled = false;
         }
     });
 }
-
 loadPushConfiguration();
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "MEDICORE_APPOINTMENT_NOTICE" && session?.access_token) {
+            if (typeof loadNotices === "function") loadNotices().catch(() => {});
+        }
+    });
+}
 
 const SB_URL="https://pjayxdpuseaidlovkrpz.supabase.co";
 const SB_KEY="sb_publishable_iRaiRLXFVCIkKevN-PqZng_Gaxe1sw8";
@@ -214,14 +267,14 @@ const authFeedback=document.getElementById("auth-feedback");
 const appointmentsFeedback=document.getElementById("appointments-feedback");
 const appointmentsList=document.getElementById("appointments-list");
 const saveButton=document.getElementById("save-appointment");
-function saveSession(s){session=s;if(s)localStorage.setItem(SESSION_KEY,JSON.stringify(s));else localStorage.removeItem(SESSION_KEY);renderAuth();if(typeof syncDoctorUI==="function")syncDoctorUI();}
+function saveSession(s){session=s;if(s)localStorage.setItem(SESSION_KEY,JSON.stringify(s));else localStorage.removeItem(SESSION_KEY);renderAuth();if(typeof syncDoctorUI==="function")syncDoctorUI();if(s?.access_token)void syncExistingPushSubscription();}
 function renderAuth(){const active=Boolean(session?.access_token&&session?.user);authForm.hidden=active;document.getElementById("signed-in").hidden=!active;document.getElementById("signed-email").textContent=active?session.user.email:"";saveButton.disabled=!active;saveButton.textContent=active?"Guardar solicitud":"Inicia sesión para guardar";if(!active){appointmentsList.replaceChildren();appointmentsFeedback.textContent="Inicia sesión para ver tus citas.";}}
 async function authCall(path,body){const r=await fetch(SB_URL+"/auth/v1/"+path,{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.msg||data.error_description||data.message||"Error de autenticación");return data;}
 async function accessToken(){if(!session)throw Error("Inicia sesión primero");if(!session.expires_at||Date.now()/1000>session.expires_at-60){const fresh=await authCall("token?grant_type=refresh_token",{refresh_token:session.refresh_token});saveSession(fresh);}return session.access_token;}
 async function login(register){if(!authForm.reportValidity())return;const email=document.getElementById("auth-email").value.trim(),password=document.getElementById("auth-password").value;authFeedback.textContent="Procesando...";const buttons=authForm.querySelectorAll("button");buttons.forEach(b=>b.disabled=true);try{const result=await authCall(register?"signup":"token?grant_type=password",{email,password});document.getElementById("auth-password").value="";if(result.access_token){saveSession(result);authFeedback.textContent="Sesión iniciada.";await loadAppointments();}else authFeedback.textContent="Comprueba tu correo electrónico para confirmar tu registro antes de iniciar sesión.";}catch(e){authFeedback.textContent=e.message;}finally{buttons.forEach(b=>b.disabled=false);}}
 authForm.addEventListener("submit",e=>{e.preventDefault();login(false);});
 document.getElementById("register-button").addEventListener("click",()=>login(true));
-document.getElementById("logout-button").addEventListener("click",()=>{const old=session;saveSession(null);authFeedback.textContent="Sesión cerrada.";if(old?.access_token)fetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{apikey:SB_KEY,Authorization:"Bearer "+old.access_token}}).catch(()=>{});});
+document.getElementById("logout-button").addEventListener("click",()=>{const old=session;void unlinkDevicePush(old);saveSession(null);authFeedback.textContent="Sesión cerrada.";if(old?.access_token)fetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{apikey:SB_KEY,Authorization:"Bearer "+old.access_token}}).catch(()=>{});});
 async function dbCall(path,method="GET",body){const token=await accessToken();const r=await fetch(SB_URL+"/rest/v1/appointments"+path,{method,headers:{apikey:SB_KEY,Authorization:"Bearer "+token,"Content-Type":"application/json",Prefer:"return=representation"},body:body?JSON.stringify(body):undefined});const data=await r.json().catch(()=>null);if(!r.ok)throw Error("No se pudo completar la solicitud. Inténtalo de nuevo.");return data;}
 function prettyDate(d){return new Date(d+"T12:00:00").toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"});}
 function today(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
