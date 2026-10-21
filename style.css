@@ -293,3 +293,65 @@ select:focus-visible,
 .reschedule-form{margin:14px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .reschedule-form .button{margin:0}
 @media(max-width:600px){.doctor-filters{display:grid;grid-template-columns:1fr}.reschedule-form{flex-direction:column;align-items:stretch}.reschedule-form>*{width:100%}}
+
+/* Vista enfocada para el único médico: no mostrar la portada ni formularios de pacientes. */
+.role-loading {
+    padding: min(20vh,120px) 22px;
+    min-height: 58vh;
+    text-align:center;
+    font-size:1.15rem;
+    font-weight:700;
+    color:var(--navy);
+}
+body.role-checking main,
+body.role-checking .site-footer { display:none !important; }
+
+body.doctor-mode main {
+    display:flex;
+    flex-direction:column;
+}
+body.doctor-mode main > :not(#panel-medico):not(#avisos-citas):not(#cuenta) {
+    display:none !important;
+}
+body.doctor-mode #panel-medico {
+    order:0;
+    padding:55px 0 65px;
+    min-height:52vh;
+}
+body.doctor-mode #avisos-citas {
+    order:1;
+    padding:50px 0;
+}
+body.doctor-mode #cuenta {
+    order:2;
+    padding:44px 0 65px;
+    background:#f4f8fb;
+}
+body.doctor-mode #cuenta .account-grid {
+    display:block;
+    max-width:700px;
+    margin:0 auto;
+}
+body.doctor-mode #cuenta .account-grid > div:first-child {
+    display:none !important;
+}
+body.doctor-mode #signed-in::before {
+    content:"Cuenta del médico";
+    display:block;
+    font-size:1.3rem;
+    font-weight:800;
+    margin-bottom:8px;
+}
+body.doctor-mode .main-nav a:not(.doctor-link) {
+    display:none !important;
+}
+body.doctor-mode .site-footer {
+    display:none !important;
+}
+body.doctor-mode .brand-text small {
+    color:#a4e3df;
+}
+@media(max-width:560px){
+    body.doctor-mode #panel-medico{padding-top:30px}
+    body.doctor-mode #avisos-citas{padding:35px 0}
+}
