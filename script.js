@@ -226,7 +226,83 @@ async function dbCall(path,method="GET",body){const token=await accessToken();co
 function prettyDate(d){return new Date(d+"T12:00:00").toLocaleDateString("es-MX",{year:"numeric",month:"long",day:"numeric"});}
 function today(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
 document.getElementById("date").min=today();
-async function loadAppointments(){if(!session)return;appointmentsFeedback.textContent="Cargando tus citas...";try{const data=await dbCall("?select=id,specialty,appointment_date,appointment_time,modality,status&order=appointment_date.desc&limit=50");appointmentsList.replaceChildren();for(const item of data){const card=document.createElement("article");card.className="saved-appointment";const title=document.createElement("h3");title.textContent=item.specialty;card.append(title);for(const line of [prettyDate(item.appointment_date),item.appointment_time+" h",item.modality,({requested:"Pendiente",confirmed:"Confirmada",cancelled:"Cancelada"})[item.status]||"Pendiente"]){const p=document.createElement("p");p.textContent=line;card.append(p);}if(item.status==="requested"){const btn=document.createElement("button");btn.className="button outline";btn.textContent="Cancelar solicitud";btn.onclick=async()=>{if(!confirm("¿Cancelar esta solicitud?"))return;btn.disabled=true;try{const changed=await dbCall("?id=eq."+encodeURIComponent(item.id)+"&status=eq.requested","PATCH",{status:"cancelled"});if(changed.length!==1)throw Error("Ya no puede cancelarse.");await loadAppointments();}catch(e){appointmentsFeedback.textContent=e.message;btn.disabled=false;}};card.append(btn);}appointmentsList.append(card);}appointmentsFeedback.textContent=data.length?"Estas son tus solicitudes:":"Todavía no tienes solicitudes de cita.";}catch(e){appointmentsFeedback.textContent=e.message;}}
+async function loadAppointments(){
+    if(!session) return;
+    appointmentsFeedback.textContent="Cargando tus citas...";
+    const overview=document.getElementById("patient-overview");
+    try {
+        const data=await dbCall("?select=id,specialty,appointment_date,appointment_time,modality,status&order=appointment_date.desc&limit=50");
+        appointmentsList.replaceChildren();
+        overview.replaceChildren();
+        const currentDate=today();
+        const stats=[
+            ["Solicitudes",data.length],
+            ["Próximas",data.filter(x=>x.appointment_date>=currentDate&&x.status!=="cancelled").length],
+            ["Confirmadas",data.filter(x=>x.status==="confirmed").length]
+        ];
+        for(const [label,value] of stats){
+            const tile=document.createElement("div");
+            tile.className="overview-tile";
+            const number=document.createElement("strong");
+            number.textContent=value;
+            const title=document.createElement("span");
+            title.textContent=label;
+            tile.append(number,title);
+            overview.append(tile);
+        }
+        for(const item of data){
+            const card=document.createElement("article");
+            card.className="saved-appointment";
+            const header=document.createElement("div");
+            header.className="appointment-card-header";
+            const title=document.createElement("h3");
+            title.textContent=item.specialty;
+            const status=document.createElement("span");
+            status.className="appointment-status "+item.status;
+            status.textContent=({requested:"Pendiente",confirmed:"Confirmada",cancelled:"Cancelada"})[item.status]||"Pendiente";
+            header.append(title,status);
+            card.append(header);
+            for(const [symbol,text] of [
+                ["▦",prettyDate(item.appointment_date)],
+                ["◷",item.appointment_time+" h"],
+                ["⌁",item.modality]
+            ]){
+                const line=document.createElement("div");
+                line.className="appointment-detail";
+                const ico=document.createElement("span");
+                ico.className="detail-symbol";
+                ico.textContent=symbol;
+                ico.setAttribute("aria-hidden","true");
+                const value=document.createElement("span");
+                value.textContent=text;
+                line.append(ico,value);
+                card.append(line);
+            }
+            if(item.status==="requested"){
+                const hint=document.createElement("small");
+                hint.className="appointment-help";
+                hint.textContent="Solicitud en revisión. Aún no está confirmada.";
+                card.append(hint);
+                const btn=document.createElement("button");
+                btn.className="button outline";
+                btn.type="button";
+                btn.textContent="Cancelar solicitud";
+                btn.onclick=async()=>{
+                    if(!confirm("¿Cancelar esta solicitud?"))return;
+                    btn.disabled=true;
+                    try{
+                        const changed=await dbCall("?id=eq."+encodeURIComponent(item.id)+"&status=eq.requested","PATCH",{status:"cancelled"});
+                        if(changed.length!==1)throw Error("Ya no puede cancelarse.");
+                        await loadAppointments();
+                    }catch(e){appointmentsFeedback.textContent=e.message;btn.disabled=false;}
+                };
+                card.append(btn);
+            }
+            appointmentsList.append(card);
+        }
+        appointmentsFeedback.textContent=data.length?"Consulta los detalles y el estado de tus solicitudes.":"Todavía no tienes citas. Puedes solicitar una en la sección Agendar cita.";
+    }catch(e){appointmentsFeedback.textContent=e.message;}
+}
 bookingForm.addEventListener("submit",async e=>{e.preventDefault();if(!session){formMessage.textContent="Inicia sesión primero.";return;}const date=document.getElementById("date").value;if(!date||date<today()){formMessage.textContent="Selecciona una fecha válida, de hoy en adelante.";return;}saveButton.disabled=true;formMessage.textContent="Enviando tu solicitud...";try{const created=await dbCall("","POST",{user_id:session.user.id,specialty:document.getElementById("specialty").value,appointment_date:date,appointment_time:document.getElementById("time").value,modality:document.getElementById("mode").value,status:"requested"});if(created?.length!==1)throw Error("No se pudo completar tu solicitud.");formMessage.textContent="¡Solicitud registrada correctamente! Estado: pendiente. Puedes consultar los detalles en Mis citas.";bookingForm.reset();await loadAppointments();}catch(e){formMessage.textContent=e.message;}finally{saveButton.disabled=false;}});
 renderAuth();
 (async()=>{if(!session)return;try{const token=await accessToken();const r=await fetch(SB_URL+"/auth/v1/user",{headers:{apikey:SB_KEY,Authorization:"Bearer "+token}});if(!r.ok)throw Error("Sesión expirada");session.user=await r.json();saveSession(session);await loadAppointments();}catch(e){if(navigator.onLine){saveSession(null);authFeedback.textContent="Vuelve a iniciar sesión.";}}})();
