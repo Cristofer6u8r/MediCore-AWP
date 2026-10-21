@@ -1,4 +1,4 @@
-const CACHE_NAME = "medicore-pwa-v7";
+const CACHE_NAME = "medicore-pwa-v8";
 const APP_SHELL = [
     "./",
     "./index.html",
@@ -52,13 +52,18 @@ self.addEventListener("push", (event) => {
         : "/";
 
     event.waitUntil(
-        self.registration.showNotification(title, {
-            body,
-            icon: "./assets/icon-192.png",
-            badge: "./assets/icon-192.png",
-            tag: "medicore-notification",
-            data: { url: target }
-        })
+        Promise.all([
+            self.registration.showNotification(title, {
+                body,
+                icon: "./assets/icon-192.png",
+                badge: "./assets/icon-192.png",
+                tag: "medicore-notification",
+                data: { url: target }
+            }),
+            self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+                clients.forEach((client) => client.postMessage({ type: "MEDICORE_APPOINTMENT_NOTICE" }));
+            })
+        ])
     );
 });
 
