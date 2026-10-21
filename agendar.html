@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gestión de citas y videoconsultas MediCore.">
+<meta name="theme-color" content="#12304A">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MediCore">
+<link rel="icon" href="./assets/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./clinic.css"><link rel="stylesheet" href="./portal.css">
+<title>Agendar cita | MediCore</title>
+</head>
+<body data-page="agendar" class="role-pending">
+<header class="site-header"><div class="container header-inner">
+<a class="brand" href="./index.html" aria-label="MediCore, inicio"><span class="brand-logo" aria-hidden="true">MC</span><span class="brand-text"><strong>MediCore</strong><small>Portal de citas</small></span></a>
+<button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
+<nav class="main-nav" id="main-nav" aria-label="Menú principal"><a href="./index.html" data-role="patient">Inicio</a>
+<a href="./agendar.html" data-role="patient" aria-current="page">Agendar cita</a>
+<a href="./citas.html" data-role="patient">Mis citas</a>
+<a href="./avisos.html" data-role="patient">Avisos</a>
+<a href="./informacion.html" data-role="patient">Información</a>
+<a href="./cuenta.html" data-role="patient">Mi cuenta</a>
+<a href="./medico.html" data-role="doctor" class="doctor-link" hidden>Panel médico</a>
+<a href="./avisos.html" data-role="doctor" class="doctor-link" hidden>Avisos</a>
+<a href="./cuenta.html" data-role="doctor" class="doctor-link" hidden>Mi cuenta</a></nav>
+</div></header>
+<div id="role-loading" class="role-loading" aria-live="polite">Preparando tu espacio de trabajo…</div>
+<main><section class="portal-heading"><div class="container"><span class="eyebrow">SOLICITUDES</span><h1>Agendar una cita</h1><p>Selecciona los datos de tu consulta. La solicitud estará pendiente hasta que el médico la confirme.</p></div></section><section class="section booking-section" id="solicitar-cita">
+            <div class="container booking-grid">
+                <div class="booking-copy">
+                    <span class="eyebrow">Agenda interactiva</span>
+                    <h2>Agenda tu próxima consulta</h2>
+                    <p>
+                        Elige una especialidad, la fecha y el horario que necesites. Revisaremos tu solicitud desde la agenda del consultorio.
+                    </p>
+                    <div class="innovation-box">
+                        <span class="innovation-symbol" aria-hidden="true">✦</span>
+                        <div>
+                            <strong>Todo en un mismo lugar</strong>
+                            <p>
+                                Elige la fecha, el horario y la modalidad que prefieras,
+                                y revisa los detalles antes de enviar tu solicitud.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="booking-form" id="booking-form">
+                    <h3>Solicitud de cita</h3>
+                    <label for="specialty">Especialidad</label>
+                    <select id="specialty" name="specialty" required>
+                        <option value="">Selecciona una opción</option>
+                        <option>Medicina general</option>
+                        <option>Pediatría</option>
+                        <option>Dermatología</option>
+                        <option>Nutrición</option>
+                    </select>
+
+                    <label for="date">Fecha</label>
+                    <input id="date" name="date" type="date" required>
+
+                    <label for="time">Horario solicitado</label>
+                    <select id="time" name="time" required>
+                        <option value="">Selecciona un horario</option>
+                        <option>09:00</option>
+                        <option>10:30</option>
+                        <option>12:00</option>
+                        <option>16:00</option>
+                    </select>
+
+                    <label for="mode">Modalidad</label>
+                    <select id="mode" name="mode" required>
+                        <option value="Presencial">Presencial</option>
+                        <option value="Videoconsulta">Videoconsulta</option>
+                    </select>
+
+                    <button class="button primary full-width" id="save-appointment" type="submit">Guardar solicitud</button>
+                    <div class="form-message" id="form-message" role="status" aria-live="polite"></div>
+                </form>
+            </div>
+        </section></main>
+<footer class="site-footer"><div class="container footer-inner"><div class="footer-brand"><span class="brand-logo" aria-hidden="true">MC</span><div><strong>MediCore</strong><span>Portal de citas y videoconsultas</span></div></div><p>Gestiona tus citas en un solo lugar.</p></div></footer>
+<div id="network-status" class="network-status" role="status" aria-live="polite"></div>
+<script src="./portal.js" defer></script>
+</body></html>
