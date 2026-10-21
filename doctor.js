@@ -91,9 +91,10 @@ function calendarLink(item){
 }
 function videoButton(item){
     if(item.status!=="confirmed"||item.modality!=="Videoconsulta"||!/^medicore-[a-f0-9-]{36}$/.test(item.meeting_room||""))return null;
-    const a=make("a","Entrar a videoconsulta","button primary");
+    const a=make("a",doctorActive?"Iniciar videoconsulta":"Entrar a videoconsulta","button primary");
     a.href="https://meet.jit.si/"+encodeURIComponent(item.meeting_room);
     a.target="_blank";a.rel="noopener noreferrer";
+    a.title=doctorActive?"Inicia sesión en Jitsi para comenzar la reunión.":"La reunión comienza cuando entra el médico.";
     return a;
 }
 function appendCalendarAndVideo(card,item){
@@ -101,7 +102,15 @@ function appendCalendarAndVideo(card,item){
     const cal=make("a","Añadir a Google Calendar","button outline");
     cal.href=calendarLink(item);cal.target="_blank";cal.rel="noopener noreferrer";
     card.append(cal);
-    const call=videoButton(item);if(call)card.append(call);
+    const call=videoButton(item);
+    if(call){
+        card.append(call);
+        const tip=make("small",doctorActive
+            ?"Para comenzar la reunión, Jitsi puede pedirte iniciar sesión como moderador. Después el paciente podrá unirse."
+            :"Podrás unirte cuando el médico haya iniciado la reunión.",
+            "appointment-help "+(doctorActive?"doctor-help":"patient-help"));
+        card.append(tip);
+    }
 }
 async function rpc(name,payload){
     const token=await accessToken();
@@ -199,9 +208,11 @@ function renderDoctorAppointments(){
         (!search||[x.specialty,x.modality,x.appointment_date,x.appointment_time,statusLabels[x.status],x.user_id.slice(0,8)].join(" ").toLowerCase().includes(search)));
     for(const item of selected){
         const card=make("article",null,"saved-appointment");
-        card.append(make("h3",item.specialty));
+        const header=make("div",null,"appointment-card-header");
+        header.append(make("h3",item.specialty),make("span",statusLabels[item.status],"appointment-status "+item.status));
+        card.append(header);
         card.append(make("p",prettyDate(item.appointment_date)+" · "+item.appointment_time+" h"));
-        card.append(make("p",item.modality+" · "+statusLabels[item.status]));
+        card.append(make("p",item.modality));
         card.append(make("p","Paciente: "+item.user_id.slice(0,8)+"…"));
         if(item.status==="requested"){
             const confirm=make("button","Confirmar cita","button primary");
