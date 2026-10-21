@@ -282,3 +282,9 @@ body.doctor-mode #signed-in::before {color:var(--clinic-ink)}
     html {scroll-behavior:auto}
     .button,.saved-appointment {transition:none!important}
 }
+
+/* Notificaciones configurables desde el escritorio del médico */
+.doctor-push-slot:not([hidden]) {display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0 2px;padding:17px 20px;border:1px solid #d4e9e3;border-radius:15px;background:#edf9f5}
+.doctor-push-slot .button{background:var(--teal);color:#fff;border-color:var(--teal);flex:0 0 auto}
+.doctor-push-slot .notification-help{font-size:.85rem;line-height:1.55;color:#426c65;max-width:580px;flex:1 1 270px}
+@media(max-width:600px){.doctor-push-slot .button,.doctor-push-slot .notification-help{width:100%;max-width:none}}
