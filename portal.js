@@ -343,22 +343,59 @@ async function unlinkDevice(previous){
 }
 async function initPush(){
   if(!notificationButton)return;
+  const localTestButton=$("notification-local-test");
   if(!("Notification" in window)||!("PushManager" in window)||!("serviceWorker" in navigator)){
-    notificationButton.disabled=true;note("Este navegador no admite notificaciones push.");return;
+    notificationButton.disabled=true;
+    if(localTestButton)localTestButton.disabled=true;
+    note("Este navegador no admite notificaciones push o Service Workers.");
+    return;
   }
-  if(!session){notificationButton.disabled=true;note("Inicia sesión para activar las notificaciones.");return;}
+  if(!session){
+    notificationButton.disabled=true;
+    if(localTestButton)localTestButton.disabled=true;
+    note("Inicia sesión para activar y comprobar las notificaciones.");
+    return;
+  }
+  if(Notification.permission==="denied"){
+    notificationButton.disabled=true;
+    if(localTestButton)localTestButton.disabled=true;
+    note("Las notificaciones están bloqueadas para MediCore. Permítelas desde el candado de la barra de direcciones y revisa los permisos de Windows.");
+    return;
+  }
   try{
     const response=await fetch("./api/config",{cache:"no-store"});
     const cfg=await response.json();
-    if(!response.ok||!cfg.pushEnabled||!cfg.vapidPublicKey)throw Error("El servicio push no está disponible.");
+    if(!response.ok||!cfg.pushEnabled||!cfg.vapidPublicKey)throw Error("El servicio push no está disponible en Railway.");
     pushConfiguration=cfg;
     const registration=await navigator.serviceWorker.ready;
     const subscription=await registration.pushManager.getSubscription();
-    notificationButton.textContent=subscription?"Enviar notificación de prueba":"Activar notificaciones";
-    if(Notification.permission==="denied")note("Permite las notificaciones en la configuración del navegador.");
-    else if(subscription)note("Dispositivo vinculado. Recibirás los avisos de tus citas.");
-    else note("Actívalas para recibir avisos de cambios, incluso con la PWA cerrada.");
-  }catch(e){notificationButton.disabled=true;note(e.message);}
+    notificationButton.textContent=subscription?"Enviar push de prueba":"Activar y enviar push";
+    if(subscription)note("Suscripción detectada. Puedes probar la visualización local o el envío push desde Railway.");
+    else note("Primero activa las notificaciones y autoriza el permiso del navegador.");
+  }catch(e){
+    notificationButton.disabled=true;
+    note("No se pudo inicializar Web Push: "+e.message);
+  }
+  if(localTestButton){
+    localTestButton.addEventListener("click",async()=>{
+      localTestButton.disabled=true;
+      try{
+        if(Notification.permission!=="granted"){
+          const permission=await Notification.requestPermission();
+          if(permission!=="granted")throw Error("Debes permitir las notificaciones para MediCore.");
+        }
+        const registration=await navigator.serviceWorker.ready;
+        await registration.showNotification("MediCore · Prueba de visualización",{
+          body:"Esta notificación se genera directamente en tu dispositivo para comprobar los permisos.",
+          icon:"./assets/icon-192.png",
+          badge:"./assets/icon-192.png",
+          data:{url:"/avisos.html"}
+        });
+        note("Se pidió al navegador mostrar la prueba local. Si no apareció, revisa el centro de notificaciones, No molestar y los permisos de Edge/Chrome en Windows. Esta prueba NO confirma la entrega desde Railway.");
+      }catch(e){note("No se pudo mostrar la prueba local: "+e.message);}
+      finally{localTestButton.disabled=false;}
+    });
+  }
   notificationButton.addEventListener("click",async()=>{
     if(!pushConfiguration)return;
     notificationButton.disabled=true;
@@ -372,11 +409,18 @@ async function initPush(){
       if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:decodeVapid(pushConfiguration.vapidPublicKey)});
       await registerDevice(sub);
       const t=await token();
-      const response=await fetch("./api/push/test",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify({endpoint:sub.endpoint})});
+      const response=await fetch("./api/push/test",{
+        method:"POST",
+        headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify({endpoint:sub.endpoint})
+      });
       const data=await response.json().catch(()=>({}));
-      if(!response.ok)throw Error(data.error||"Error al enviar notificación de prueba.");
-      notificationButton.textContent="Enviar notificación de prueba";
-      note("Notificaciones activadas para esta cuenta y este dispositivo.");
+      if(!response.ok){
+        if(response.status===429)throw Error("Ya se envió una prueba recientemente. Espera un minuto antes de repetirla.");
+        throw Error(data.error||"Railway no pudo enviar la push.");
+      }
+      notificationButton.textContent="Enviar push de prueba";
+      note("Railway aceptó la prueba push. Si no se muestra, pulsa «Probar visualización local» para distinguir un bloqueo del navegador de un problema de entrega.");
     }catch(e){note(e.message);}
     finally{notificationButton.disabled=false;}
   });
@@ -434,7 +478,10 @@ async function boot(){
   if("serviceWorker" in navigator){
     window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
     navigator.serviceWorker.addEventListener("message",(event)=>{
-      if(event.data?.type==="MEDICORE_APPOINTMENT_NOTICE"&&page==="avisos")void loadNotices();
+      if(event.data?.type==="MEDICORE_APPOINTMENT_NOTICE"){
+        if(page==="avisos")void loadNotices();
+        if(notificationButton)note("El Service Worker recibió una push. Si no aparece el aviso del sistema, revisa las notificaciones de Windows y el navegador.");
+      }
     });
   }
   const banner=$("network-status");
