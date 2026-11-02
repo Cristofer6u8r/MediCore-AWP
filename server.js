@@ -315,12 +315,16 @@ async function handleApi(req, res, pathname) {
                 return true;
             }
             recentTestRequests.set(key, now);
-            await webpush.sendNotification(subscription, JSON.stringify({
-                title: "MediCore",
-                body: "Las notificaciones de tus citas están activas en este dispositivo.",
-                url: "/#avisos-citas"
+            const providerResult = await webpush.sendNotification(subscription, JSON.stringify({
+                title: "MediCore · Prueba push",
+                body: "Railway envió una notificación de prueba a este dispositivo.",
+                url: "/avisos.html"
             }));
-            sendJson(res, 200, { ok: true });
+            sendJson(res, 200, {
+                ok: true,
+                acceptedByPushService: true,
+                providerStatus: providerResult.statusCode || null
+            });
         } catch (error) {
             if ([404, 410].includes(error.statusCode)) {
                 const subscriptions = await readSubscriptions().catch(() => []);
