@@ -1,4 +1,4 @@
-const CACHE_NAME = "medicore-pwa-v9";
+const CACHE_NAME = "medicore-pwa-v10";
 const APP_SHELL = [
     "./",
     "./index.html",
@@ -65,7 +65,7 @@ self.addEventListener("push", (event) => {
                 body,
                 icon: "./assets/icon-192.png",
                 badge: "./assets/icon-192.png",
-                tag: "medicore-notification",
+                tag: typeof payload.tag === "string" && /^[a-f0-9-]{36}$/i.test(payload.tag) ? payload.tag : undefined,
                 data: { url: target }
             }),
             self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
