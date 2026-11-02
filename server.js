@@ -160,7 +160,7 @@ function authorizedForNoticeWebhook(req) {
     return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(provided));
 }
 
-async function sendUserNotification(userId, message) {
+async function sendUserNotification(userId, message, targetPath, noticeId) {
     const subscriptions = await readSubscriptions();
     const devices = subscriptions.filter((item) => item.userId === userId);
     const expiredEndpoints = new Set();
@@ -171,7 +171,8 @@ async function sendUserNotification(userId, message) {
             await webpush.sendNotification(device, JSON.stringify({
                 title: "MediCore · Citas",
                 body: message,
-                url: "/#avisos-citas"
+                url: targetPath,
+                tag: noticeId || undefined
             }));
             sent += 1;
         } catch (error) {
@@ -351,12 +352,16 @@ async function handleApi(req, res, pathname) {
         }
         const userId = typeof body.user_id === "string" ? body.user_id : "";
         const message = typeof body.message === "string" ? body.message.trim().slice(0, 250) : "";
+        // Destinos exactos; nunca aceptar URLs externas de una notificación.
+        const allowedPaths = new Set(["/medico.html", "/citas.html", "/avisos.html"]);
+        const targetPath = allowedPaths.has(body.target_path) ? body.target_path : "/avisos.html";
+        const noticeId = /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(body.notice_id || "") ? body.notice_id : null;
         if (!/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(userId) || !message) {
             sendJson(res, 400, { error: "Los datos del aviso no son válidos." });
             return true;
         }
         try {
-            const result = await sendUserNotification(userId, message);
+            const result = await sendUserNotification(userId, message, targetPath, noticeId);
             sendJson(res, 200, { ok: true, ...result });
         } catch (error) {
             console.error("Falló la entrega de avisos de citas:", error.message);
