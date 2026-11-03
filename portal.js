@@ -344,21 +344,25 @@ async function unlinkDevice(previous){
 async function initPush(){
   if(!notificationButton)return;
   const localTestButton=$("notification-local-test");
+  const resetButton=$("notification-reset");
   if(!("Notification" in window)||!("PushManager" in window)||!("serviceWorker" in navigator)){
     notificationButton.disabled=true;
     if(localTestButton)localTestButton.disabled=true;
+    if(resetButton)resetButton.disabled=true;
     note("Este navegador no admite notificaciones push o Service Workers.");
     return;
   }
   if(!session){
     notificationButton.disabled=true;
     if(localTestButton)localTestButton.disabled=true;
+    if(resetButton)resetButton.disabled=true;
     note("Inicia sesión para activar y comprobar las notificaciones.");
     return;
   }
   if(Notification.permission==="denied"){
     notificationButton.disabled=true;
     if(localTestButton)localTestButton.disabled=true;
+    if(resetButton)resetButton.disabled=true;
     note("Las notificaciones están bloqueadas para MediCore. Permítelas desde el candado de la barra de direcciones y revisa los permisos de Windows.");
     return;
   }
@@ -374,6 +378,7 @@ async function initPush(){
     else note("Primero activa las notificaciones y autoriza el permiso del navegador.");
   }catch(e){
     notificationButton.disabled=true;
+    if(resetButton)resetButton.disabled=true;
     note("No se pudo inicializar Web Push: "+e.message);
   }
   if(localTestButton){
@@ -394,6 +399,46 @@ async function initPush(){
         note("Se pidió al navegador mostrar la prueba local. Si no apareció, revisa el centro de notificaciones, No molestar y los permisos de Edge/Chrome en Windows. Esta prueba NO confirma la entrega desde Railway.");
       }catch(e){note("No se pudo mostrar la prueba local: "+e.message);}
       finally{localTestButton.disabled=false;}
+    });
+  }
+  // Renueva únicamente la PushSubscription del navegador actual.
+  // No elimina el Service Worker, ni datos del paciente, ni otros dispositivos.
+  if(resetButton){
+    resetButton.addEventListener("click", async()=>{
+      if(!pushConfiguration)return;
+      resetButton.disabled=true;
+      notificationButton.disabled=true;
+      try {
+        if(Notification.permission!=="granted"){
+          const permission=await Notification.requestPermission();
+          if(permission!=="granted")throw Error("Debes permitir las notificaciones para restablecer el servicio push.");
+        }
+        note("Renovando suscripción push de este dispositivo…");
+        const reg=await navigator.serviceWorker.ready;
+        const previous=await reg.pushManager.getSubscription();
+        if(previous){
+          const t=await token();
+          const removal=await fetch("./api/push/subscribe",{
+            method:"DELETE",
+            headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},
+            body:JSON.stringify({endpoint:previous.endpoint})
+          });
+          if(!removal.ok)throw Error("No se pudo eliminar la suscripción anterior del servidor. Inténtalo de nuevo.");
+          if(!await previous.unsubscribe())throw Error("Edge no pudo cancelar la suscripción anterior.");
+        }
+        const renewed=await reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:decodeVapid(pushConfiguration.vapidPublicKey)
+        });
+        await registerDevice(renewed);
+        notificationButton.textContent="Enviar push de prueba";
+        note("Suscripción renovada en esta laptop. Pulsa «Enviar push de prueba» para comprobar si Edge ya recibe los mensajes.");
+      }catch(e){
+        note("No se pudo restablecer la suscripción: "+e.message);
+      }finally{
+        resetButton.disabled=false;
+        notificationButton.disabled=false;
+      }
     });
   }
   notificationButton.addEventListener("click",async()=>{
