@@ -465,7 +465,7 @@ async function initPush(){
         throw Error(data.error||"Railway no pudo enviar la push.");
       }
       notificationButton.textContent="Enviar push de prueba";
-      note("Railway aceptó la prueba push. Si no se muestra, pulsa «Probar visualización local» para distinguir un bloqueo del navegador de un problema de entrega.");
+      note("Railway envió la prueba al servicio push (respuesta "+(data.providerStatus||"aceptada")+"). Si Edge no la recibe, prueba «Restablecer push en este dispositivo».");
     }catch(e){note(e.message);}
     finally{notificationButton.disabled=false;}
   });
