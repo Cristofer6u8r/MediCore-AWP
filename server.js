@@ -289,13 +289,6 @@ async function handleApi(req, res, pathname) {
             sendJson(res, 401, { error: "Inicia sesión para probar tus notificaciones." });
             return true;
         }
-        const now = Date.now();
-        const key = userId;
-        const lastRequest = recentTestRequests.get(key) || 0;
-        if (now - lastRequest < 60000) {
-            sendJson(res, 429, { error: "Espera un minuto antes de volver a enviar una prueba." });
-            return true;
-        }
         let body;
         try {
             body = await readJson(req);
@@ -312,6 +305,14 @@ async function handleApi(req, res, pathname) {
             const subscription = subscriptions.find((item) => item.endpoint === body.endpoint && item.userId === userId);
             if (!subscription) {
                 sendJson(res, 404, { error: "Este dispositivo no está vinculado a tu cuenta." });
+                return true;
+            }
+            // Limitar las pruebas por dispositivo, no por cuenta: médico/paciente
+            // pueden comprobar cada navegador sin bloquear la prueba de otro.
+            const key = crypto.createHash("sha256").update(subscription.endpoint).digest("hex");
+            const now = Date.now();
+            if (now - (recentTestRequests.get(key) || 0) < 60000) {
+                sendJson(res, 429, { error: "Este dispositivo envió una prueba recientemente. Espera un minuto." });
                 return true;
             }
             recentTestRequests.set(key, now);
